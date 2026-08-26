@@ -47,8 +47,13 @@
 
 :root {
   color-scheme: light;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: #fffbf5;
+  --foreground: #3d3a38;
+  --lever-line: #3d3a38;
+  --lever-mark: #7a8b99;
+  --lever-fixed: #7a8b99;
+  --lever-move: #ff9040;
+  --lever-pivot: #4ec5c1;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -159,5 +164,6 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", system-ui, sans-serif;
   }
 }

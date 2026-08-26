@@ -1,0 +1,10 @@
+export type Weight = { id: string; grams: number; position: number; movable: boolean; gramsEditable: boolean }
+export type Problem = { id: string; title: string; emoji: string; difficultyLabel: 'かんたん' | 'ふつう' | 'やってみる'; prompt: string; notches: number; weights: Weight[]; gramsRange?: { min: number; max: number; step: number }; solved: { discovery: string; formula: string; realWorldTitle: string; realWorldBody: string; note?: string } }
+
+export const problems: Problem[] = [
+  { id: 'lever-01', title: 'つりあいを 見つけよう', emoji: '⚖️', difficultyLabel: 'かんたん', prompt: '右のおもりを動かして、てこを水平にしよう。', notches: 6, weights: [{ id: 'left', grams: 10, position: -3, movable: false, gramsEditable: false }, { id: 'right', grams: 10, position: 6, movable: true, gramsEditable: false }], solved: { discovery: 'おなじ おもさなら、してんから おなじ きょり', formula: '10g × 3 = 10g × 3', realWorldTitle: 'シーソー', realWorldBody: 'シーソーも、左右のおもさと してんからの きょりで つりあいが きまるよ。' } },
+  { id: 'lever-02', title: 'おもさが ちがうとき', emoji: '🪨', difficultyLabel: 'ふつう', prompt: 'おもい右のおもりを、どこに置くと水平になるかな？', notches: 6, weights: [{ id: 'left', grams: 10, position: -6, movable: false, gramsEditable: false }, { id: 'right', grams: 20, position: 6, movable: true, gramsEditable: false }], solved: { discovery: 'おもい ほうを、してんに ちかづける', formula: '10g × 6 = 20g × 3', realWorldTitle: 'くぎぬき', realWorldBody: 'くぎぬきは、長いほうを持つと、小さな力でも くぎを ぬきやすくなるよ。' } },
+  { id: 'lever-03', title: 'こたえは ひとつじゃない', emoji: '🧩', difficultyLabel: 'やってみる', prompt: 'おもさや場所を変えて、水平になる組み合わせを見つけよう。', notches: 6, weights: [{ id: 'left', grams: 15, position: -4, movable: false, gramsEditable: false }, { id: 'right', grams: 5, position: 6, movable: true, gramsEditable: true }], gramsRange: { min: 5, max: 30, step: 5 }, solved: { discovery: 'つりあう やりかたは、ひとつじゃない', formula: '15g × 4 = 20g × 3（れい）', note: 'おもさと きょりの くみあわせで、いろいろな こたえが あるよ。', realWorldTitle: 'はかり', realWorldBody: 'はかりは、ものの おもさを くらべるために、てこの つりあいを つかっているよ。' } },
+]
+export function getProblem(id: string) { return problems.find((problem) => problem.id === id) }
+export function getNextProblem(id: string) { const index = problems.findIndex((p) => p.id === id); return problems[(index + 1) % problems.length] }
