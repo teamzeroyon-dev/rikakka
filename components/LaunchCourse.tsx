@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { LaunchLane } from '@/lib/problems'
 import { LaunchLog, type LaunchRecord } from './LaunchLog'
 
@@ -8,6 +8,9 @@ const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(ma
 const POST_X = 70
 const TRACK_END_X = 348
 const PX_PER_CM_PULL = 5
+
+type Goal = { center: number; tolerance: number }
+type Achieved = { label: string; stretch: number; distance: number }
 
 function rubberStrand(x1: number, y1: number, x2: number, y2: number, amplitude: number, segments: number) {
   const dx = (x2 - x1) / segments
@@ -32,8 +35,9 @@ export function LaunchCourse({
   lanes: LaunchLane[]
   length: number
   maxStretch: number
-  onSolved: () => void
+  onSolved: (achieved: Achieved[]) => void
 }) {
+  const [goals, setGoals] = useState<Record<string, Goal> | null>(null)
   const [stretches, setStretches] = useState<Record<string, number>>({})
   const [records, setRecords] = useState<Record<string, LaunchRecord[]>>({})
   const [selected, setSelected] = useState(lanes[0].id)
@@ -41,6 +45,21 @@ export function LaunchCourse({
   const [carOffset, setCarOffset] = useState<Record<string, number>>({})
   const [launching, setLaunching] = useState<Record<string, boolean>>({})
   const animRef = useRef<number | null>(null)
+
+  // Randomize goals on the client only after mount, so each attempt (and each fresh
+  // mount after a retry) gets a different target and the answer can't be memorized.
+  useEffect(() => {
+    const g: Record<string, Goal> = {}
+    for (const lane of lanes) {
+      const [min, max] = lane.targetStretchRange
+      const targetStretch = min + Math.floor(Math.random() * (max - min + 1))
+      const center = 4 * targetStretch * targetStretch
+      const tolerance = Math.max(20, 4 * targetStretch)
+      g[lane.id] = { center, tolerance }
+    }
+    setGoals(g)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const current = stretches[selected] ?? 0
   const scale = 278 / length
@@ -57,11 +76,11 @@ export function LaunchCourse({
   }
 
   const fire = (id = selected) => {
+    if (!goals) return
     const stretch = stretches[id] ?? 0
     setDragging(false)
     if (stretch <= 0 || launching[id]) return
     const distance = 4 * stretch * stretch
-    const lane = lanes.find((l) => l.id === id)!
     const travelPx = Math.min(distance * scale, TRACK_END_X - POST_X - 17)
 
     setLaunching((l) => ({ ...l, [id]: true }))
@@ -80,17 +99,30 @@ export function LaunchCourse({
         setCarOffset((c) => ({ ...c, [id]: 0 }))
         setRecords((r) => {
           const updated = { ...r, [id]: [...(r[id] ?? []), { stretch, distance }] }
-          const allDone = lanes.every((l) => (updated[l.id] ?? []).some((x) => Math.abs(x.distance - l.goalCenterCm) <= l.goalToleranceCm))
-          if (allDone) setTimeout(onSolved, 400)
+          const allDone = lanes.every((l) => (updated[l.id] ?? []).some((x) => Math.abs(x.distance - goals[l.id].center) <= goals[l.id].tolerance))
+          if (allDone) {
+            const achieved: Achieved[] = lanes.map((l) => {
+              const hit = (updated[l.id] ?? []).find((x) => Math.abs(x.distance - goals[l.id].center) <= goals[l.id].tolerance)!
+              return { label: l.label, stretch: hit.stretch, distance: Math.round(hit.distance) }
+            })
+            setTimeout(() => onSolved(achieved), 400)
+          }
           return updated
         })
       }
     }
     animRef.current = requestAnimationFrame(step)
-    void lane
   }
 
   const all = lanes.flatMap((l) => records[l.id] ?? [])
+
+  if (!goals) {
+    return (
+      <div className="flex h-40 items-center justify-center rounded-2xl bg-card text-sm text-muted-foreground shadow-sm">
+        じゅんび中…
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-3">
@@ -102,12 +134,13 @@ export function LaunchCourse({
         onPointerUp={() => fire()}
       >
         {lanes.map((lane, i) => {
+          const goal = goals[lane.id]
           const y = i * 105 + 20
           const stretch = stretches[lane.id] ?? 0
           const hookX = POST_X - stretch * PX_PER_CM_PULL
           const offset = carOffset[lane.id] ?? 0
           const carX = launching[lane.id] ? POST_X + offset : hookX
-          const goalX = POST_X + lane.goalCenterCm * scale
+          const goalX = POST_X + goal.center * scale
           const tension = stretch / maxStretch
           const amplitude = 7 * (1 - tension) + 0.5
           const bandColor = `rgb(${217 + Math.round(38 * tension)}, ${83 - Math.round(50 * tension)}, ${79 - Math.round(50 * tension)})`
@@ -124,9 +157,9 @@ export function LaunchCourse({
               <line x1={POST_X} y1={y + 42} x2={TRACK_END_X} y2={y + 42} stroke="#B9A88A" strokeWidth="3" />
 
               {/* goal zone */}
-              <rect x={goalX - lane.goalToleranceCm * scale} y={y + 18} width={lane.goalToleranceCm * 2 * scale} height="48" fill="#5FB85F" opacity=".3" />
+              <rect x={goalX - goal.tolerance * scale} y={y + 18} width={goal.tolerance * 2 * scale} height="48" fill="#5FB85F" opacity=".3" />
               <text x={goalX} y={y + 15} textAnchor="middle" fontSize="12">
-                🏁 {lane.goalCenterCm}cm
+                🏁 {Math.round(goal.center)}cm
               </text>
 
               {/* pull-back ruler */}
