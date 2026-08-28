@@ -82,52 +82,52 @@ export function MapSugoroku({ k, save, highlightedNodeId }: { k: number; save: S
             <circle cx={node.x} cy={node.y} r={3} fill={dotColor} opacity={dotOpacity} style={{ pointerEvents: 'none' }} />
             <g opacity={nodeOpacity} style={{ pointerEvents: nodeOpacity > 0.4 ? 'auto' : 'none' }}>
               {status === 'available' && (
-                <circle cx={node.x} cy={node.y} r={18} fill="none" stroke="#FFFFFF" strokeWidth={3} className="animate-node-pulse" />
+                <circle cx={node.x} cy={node.y} r={9} fill="none" stroke="#FFFFFF" strokeWidth={1.5} className="animate-node-pulse" />
               )}
-              {highlighted && <circle cx={node.x} cy={node.y} r={22} fill="none" stroke="#FFFFFF" strokeWidth={4} className="animate-node-flash" />}
+              {highlighted && <circle cx={node.x} cy={node.y} r={11} fill="none" stroke="#FFFFFF" strokeWidth={2.5} className="animate-node-flash" />}
               <circle
                 cx={node.x}
                 cy={node.y}
-                r={12}
+                r={6}
                 fill={status === 'locked' ? '#C9CFD4' : status === 'faded' ? `${themeColor}80` : themeColor}
                 stroke="#FFFFFF"
-                strokeWidth={status === 'available' ? 3 : 2}
+                strokeWidth={status === 'available' ? 2 : 1.25}
               />
               {status === 'cleared' && (
-                <text x={node.x + 12} y={node.y + 16} fontSize={14} fontWeight={900} fill="#3D8A3D" stroke="#FFFFFF" strokeWidth={3} paintOrder="stroke">
+                <text x={node.x + 6} y={node.y + 8.5} fontSize={8.5} fontWeight={900} fill="#3D8A3D" stroke="#FFFFFF" strokeWidth={2} paintOrder="stroke">
                   ✓
                 </text>
               )}
               {status === 'faded' && (
-                <text x={node.x + 12} y={node.y + 16} fontSize={13} fontWeight={900} fill="#3D3A38" stroke="#FFFFFF" strokeWidth={3} paintOrder="stroke">
+                <text x={node.x + 6} y={node.y + 8.5} fontSize={7.5} fontWeight={900} fill="#3D3A38" stroke="#FFFFFF" strokeWidth={2} paintOrder="stroke">
                   ↻
                 </text>
               )}
               {status === 'locked' && (
-                <text x={node.x} y={node.y + 5} textAnchor="middle" fontSize={14} fill="#7A8288">
+                <text x={node.x} y={node.y + 2.5} textAnchor="middle" fontSize={7.5} fill="#7A8288">
                   ⌘
                 </text>
               )}
               <text
                 x={node.x}
-                y={node.y + 24}
+                y={node.y + 14}
                 textAnchor="middle"
-                fontSize={10}
+                fontSize={6.5}
                 fontWeight={900}
                 fill="#3D3A38"
                 stroke="#FFFFFF"
-                strokeWidth={4}
+                strokeWidth={2.5}
                 paintOrder="stroke"
                 style={{ pointerEvents: 'none' }}
               >
                 {node.label}
               </text>
               {!implemented && status !== 'locked' && (
-                <text x={node.x} y={node.y - 26} textAnchor="middle" fontSize={11} fontWeight={900} fill="#7A8288">
+                <text x={node.x} y={node.y - 14} textAnchor="middle" fontSize={6.5} fontWeight={900} fill="#7A8288">
                   もうすぐ
                 </text>
               )}
-              <circle cx={node.x} cy={node.y} r={28} fill="transparent" data-hit="node" data-node-id={node.id} style={{ cursor: 'pointer' }} />
+              <circle cx={node.x} cy={node.y} r={16} fill="transparent" data-hit="node" data-node-id={node.id} style={{ cursor: 'pointer' }} />
             </g>
           </g>
         )
