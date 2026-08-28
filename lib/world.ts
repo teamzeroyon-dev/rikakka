@@ -1,41 +1,156 @@
-export type Node = { id: string; areaId: string; label: string; emoji: string; grade: 3 | 4 | 5 | 6; x: number; y: number; prerequisites: string[]; bridges: string[]; isMainPath: boolean }
-export type Area = { id: string; regionId: string; name: string; emoji: string }
-export type Region = { id: string; continentId: string; name: string; emoji: string; themeColor: string; unlockCost: number }
-export type Continent = { id: string; name: string; emoji: string; accent: string }
+export type Point = { x: number; y: number }
 
-export const continents: Continent[] = [
-  { id: 'science', name: 'りか大陸', emoji: '🌋', accent: '#FF9040' },
-  { id: 'math', name: 'さんすう大陸', emoji: '🗻', accent: '#4EC5C1' },
+export type Island = {
+  id: string
+  name: string
+  labelPos: Point
+  fill: string
+  stroke: string
+  outline: Point[]
+  status: 'open' | 'comingSoon'
+}
+
+export type MapRegion = {
+  id: string
+  islandId: string
+  name: string
+  labelPos: Point
+  color: string
+  status: 'open' | 'comingSoon'
+  polygon: Point[]
+}
+
+export type ThemeId = 'chikara' | 'hikari' | 'jishaku' | 'denki'
+
+export const themeColors: Record<ThemeId, string> = {
+  chikara: '#FF9040',
+  hikari: '#E8B33A',
+  jishaku: '#9B72CF',
+  denki: '#4E8FC5',
+}
+
+export type SugorokuNode = {
+  id: string
+  label: string
+  grade: 3 | 4 | 5 | 6
+  theme: ThemeId
+  regionId: string
+  x: number
+  y: number
+}
+
+export const WORLD_W = 1200
+export const WORLD_H = 1900
+
+export const islands: Island[] = [
+  {
+    id: 'science',
+    name: 'りか島',
+    labelPos: { x: 630, y: 292 },
+    fill: '#EADFC8',
+    stroke: '#8A7A5E',
+    status: 'open',
+    outline: [
+      { x: 288, y: 555 }, { x: 300, y: 470 }, { x: 360, y: 392 }, { x: 470, y: 350 },
+      { x: 600, y: 337 }, { x: 740, y: 345 }, { x: 860, y: 380 }, { x: 945, y: 440 },
+      { x: 972, y: 545 }, { x: 960, y: 660 }, { x: 910, y: 762 }, { x: 820, y: 838 },
+      { x: 720, y: 868 }, { x: 645, y: 872 }, { x: 540, y: 872 }, { x: 430, y: 848 },
+      { x: 345, y: 782 }, { x: 297, y: 682 },
+    ],
+  },
+  {
+    id: 'math',
+    name: 'さんすう島',
+    labelPos: { x: 595, y: 1108 },
+    fill: '#D9E8E6',
+    stroke: '#5E8A85',
+    status: 'comingSoon',
+    outline: [
+      { x: 310, y: 1330 }, { x: 350, y: 1240 }, { x: 450, y: 1180 }, { x: 570, y: 1160 },
+      { x: 700, y: 1172 }, { x: 810, y: 1215 }, { x: 880, y: 1290 }, { x: 890, y: 1390 },
+      { x: 830, y: 1470 }, { x: 710, y: 1525 }, { x: 570, y: 1545 }, { x: 440, y: 1520 },
+      { x: 345, y: 1450 }, { x: 308, y: 1380 },
+    ],
+  },
 ]
-export const regions: Region[] = [
-  { id: 'physics', continentId: 'science', name: 'ぶつり地方', emoji: '⚙️', themeColor: '#FF9040', unlockCost: 0 },
-  { id: 'life', continentId: 'science', name: 'せいめい地方', emoji: '🌱', themeColor: '#5FB85F', unlockCost: 40 },
-  { id: 'earth', continentId: 'science', name: 'ちきゅう地方', emoji: '🪨', themeColor: '#B08050', unlockCost: 60 },
-  { id: 'change', continentId: 'math', name: '変化と関係地方', emoji: '📈', themeColor: '#4EC5C1', unlockCost: 0 },
-  { id: 'shape', continentId: 'math', name: 'かたち地方', emoji: '🔷', themeColor: '#6C7BE0', unlockCost: 30 },
-  { id: 'number', continentId: 'math', name: 'かずと計算地方', emoji: '🔢', themeColor: '#E06C9F', unlockCost: 30 },
-  { id: 'data', continentId: 'math', name: 'データ地方', emoji: '📊', themeColor: '#E0A030', unlockCost: 50 },
+
+export const mathIslandCenter: Point = { x: 595, y: 1355 }
+
+export const mapRegions: MapRegion[] = [
+  {
+    id: 'chigaku',
+    islandId: 'science',
+    name: '地学山',
+    labelPos: { x: 432, y: 462 },
+    color: '#B08050',
+    status: 'comingSoon',
+    polygon: [
+      { x: 615, y: 590 }, { x: 288, y: 555 }, { x: 300, y: 470 }, { x: 360, y: 392 },
+      { x: 470, y: 350 }, { x: 600, y: 337 },
+    ],
+  },
+  {
+    id: 'kagaku',
+    islandId: 'science',
+    name: '化学海岸',
+    labelPos: { x: 806, y: 452 },
+    color: '#4E8FC5',
+    status: 'comingSoon',
+    polygon: [
+      { x: 615, y: 590 }, { x: 600, y: 337 }, { x: 740, y: 345 }, { x: 860, y: 380 },
+      { x: 945, y: 440 }, { x: 972, y: 545 },
+    ],
+  },
+  {
+    id: 'butsuri',
+    islandId: 'science',
+    name: '物理岡',
+    labelPos: { x: 792, y: 712 },
+    color: '#FF9040',
+    status: 'open',
+    polygon: [
+      { x: 615, y: 590 }, { x: 972, y: 545 }, { x: 960, y: 660 }, { x: 910, y: 762 },
+      { x: 820, y: 838 }, { x: 720, y: 868 }, { x: 645, y: 872 },
+    ],
+  },
+  {
+    id: 'seibutsu',
+    islandId: 'science',
+    name: '生物森',
+    labelPos: { x: 440, y: 722 },
+    color: '#5FB85F',
+    status: 'comingSoon',
+    polygon: [
+      { x: 615, y: 590 }, { x: 645, y: 872 }, { x: 540, y: 872 }, { x: 430, y: 848 },
+      { x: 345, y: 782 }, { x: 297, y: 682 }, { x: 288, y: 555 },
+    ],
+  },
 ]
-export const areas: Area[] = [
-  { id: 'lever', regionId: 'physics', name: 'てこ', emoji: '⚖️' }, { id: 'pendulum', regionId: 'physics', name: 'ふりこ', emoji: '🕰️' }, { id: 'circuit', regionId: 'physics', name: 'でんき', emoji: '💡' },
-  { id: 'ratio', regionId: 'change', name: 'ひれい', emoji: '📈' }, { id: 'percent', regionId: 'change', name: 'わりあい', emoji: '🥧' }, { id: 'area', regionId: 'shape', name: 'めんせき', emoji: '🔷' },
+
+export const sugorokuNodes: SugorokuNode[] = [
+  { id: 'rubber-01', label: 'ゴムの力 ①', grade: 3, theme: 'chikara', regionId: 'butsuri', x: 700, y: 630 },
+  { id: 'rubber-02', label: 'ゴムの力 ②', grade: 3, theme: 'chikara', regionId: 'butsuri', x: 775, y: 622 },
+  { id: 'wind-01', label: 'かぜの力 ①', grade: 3, theme: 'chikara', regionId: 'butsuri', x: 850, y: 626 },
+  { id: 'light-01', label: 'ひかり ①', grade: 3, theme: 'hikari', regionId: 'butsuri', x: 920, y: 642 },
+  { id: 'mirror-01', label: 'かがみ ①', grade: 3, theme: 'hikari', regionId: 'butsuri', x: 918, y: 694 },
+  { id: 'sound-01', label: 'おと ①', grade: 3, theme: 'hikari', regionId: 'butsuri', x: 845, y: 682 },
+  { id: 'magnet-01', label: 'じしゃく ①', grade: 3, theme: 'jishaku', regionId: 'butsuri', x: 772, y: 686 },
+  { id: 'magnet-02', label: 'じしゃく ②', grade: 3, theme: 'jishaku', regionId: 'butsuri', x: 700, y: 696 },
+  { id: 'circuit-01', label: 'でんきの とおり道', grade: 3, theme: 'denki', regionId: 'butsuri', x: 700, y: 752 },
+  { id: 'current-01', label: '電流の はたらき', grade: 4, theme: 'denki', regionId: 'butsuri', x: 772, y: 742 },
+  { id: 'pendulum-01', label: 'ふりこ ①', grade: 5, theme: 'chikara', regionId: 'butsuri', x: 842, y: 748 },
+  { id: 'pendulum-02', label: 'ふりこ ②', grade: 5, theme: 'chikara', regionId: 'butsuri', x: 902, y: 762 },
+  { id: 'emag-01', label: '電流が つくる磁力', grade: 5, theme: 'denki', regionId: 'butsuri', x: 856, y: 806 },
+  { id: 'lever-01', label: 'てこ ①', grade: 6, theme: 'chikara', regionId: 'butsuri', x: 786, y: 812 },
+  { id: 'lever-02', label: 'てこ ②', grade: 6, theme: 'chikara', regionId: 'butsuri', x: 716, y: 818 },
+  { id: 'lever-03', label: 'てこ ③', grade: 6, theme: 'chikara', regionId: 'butsuri', x: 722, y: 852 },
+  { id: 'elec-use-01', label: '電気の りよう', grade: 6, theme: 'denki', regionId: 'butsuri', x: 790, y: 848 },
 ]
-export const nodes: Node[] = [
-  { id: 'lever-01', areaId: 'lever', label: 'てこ ①', emoji: '⚖️', grade: 6, x: 50, y: 80, prerequisites: [], bridges: [], isMainPath: true },
-  { id: 'lever-02', areaId: 'lever', label: 'てこ ②', emoji: '⚖️', grade: 6, x: 50, y: 220, prerequisites: ['lever-01'], bridges: [], isMainPath: true },
-  { id: 'lever-03', areaId: 'lever', label: 'てこ ③', emoji: '🔍', grade: 6, x: 50, y: 360, prerequisites: ['lever-02'], bridges: ['ratio-02'], isMainPath: true },
-  { id: 'pendulum-01', areaId: 'pendulum', label: 'ふりこ ①', emoji: '🕰️', grade: 5, x: 22, y: 300, prerequisites: [], bridges: [], isMainPath: false },
-  { id: 'pendulum-02', areaId: 'pendulum', label: 'ふりこ ②', emoji: '🕰️', grade: 5, x: 22, y: 440, prerequisites: ['pendulum-01'], bridges: [], isMainPath: false },
-  { id: 'circuit-01', areaId: 'circuit', label: 'でんき ①', emoji: '💡', grade: 3, x: 78, y: 300, prerequisites: [], bridges: [], isMainPath: false },
-  { id: 'ratio-01', areaId: 'ratio', label: 'ひれい ①', emoji: '📈', grade: 6, x: 50, y: 80, prerequisites: [], bridges: [], isMainPath: true },
-  { id: 'ratio-02', areaId: 'ratio', label: 'ひれい ②', emoji: '📈', grade: 6, x: 50, y: 220, prerequisites: ['ratio-01'], bridges: [], isMainPath: true },
-  { id: 'percent-01', areaId: 'percent', label: 'わりあい ①', emoji: '🥧', grade: 5, x: 22, y: 300, prerequisites: ['ratio-01'], bridges: [], isMainPath: false },
-  { id: 'area-01', areaId: 'area', label: 'めんせき ①', emoji: '🔷', grade: 5, x: 50, y: 80, prerequisites: [], bridges: [], isMainPath: true },
-  { id: 'area-02', areaId: 'area', label: 'めんせき ②', emoji: '🔷', grade: 6, x: 50, y: 220, prerequisites: ['area-01'], bridges: [], isMainPath: true },
-]
-export const getRegion = (id: string) => regions.find((r) => r.id === id)
-export const getContinent = (id: string) => continents.find((c) => c.id === id)
-export const getArea = (id: string) => areas.find((a) => a.id === id)
-export const getNodesForRegion = (regionId: string) => { const areaIds = areas.filter((a) => a.regionId === regionId).map((a) => a.id); return nodes.filter((n) => areaIds.includes(n.areaId)) }
-export const getNode = (id: string) => nodes.find((n) => n.id === id)
-export const getRegionForNode = (id: string) => { const node = getNode(id); const area = node && getArea(node.areaId); return area && getRegion(regions.find((r) => r.id === area.regionId)?.id || '') }
+
+export const getIsland = (id: string) => islands.find((i) => i.id === id)
+export const getMapRegion = (id: string) => mapRegions.find((r) => r.id === id)
+export const getRegionsForIsland = (islandId: string) => mapRegions.filter((r) => r.islandId === islandId)
+export const getNodesForRegion = (regionId: string) => sugorokuNodes.filter((n) => n.regionId === regionId)
+export const getSugorokuNode = (id: string) => sugorokuNodes.find((n) => n.id === id)
+export const getNodeIndex = (id: string) => sugorokuNodes.findIndex((n) => n.id === id)
+export const getPrevNode = (id: string) => sugorokuNodes[getNodeIndex(id) - 1] ?? null

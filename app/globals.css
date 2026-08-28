@@ -166,4 +166,46 @@
     @apply bg-background text-foreground;
     font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", system-ui, sans-serif;
   }
+  svg text {
+    font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
+  }
+}
+
+@keyframes node-pulse {
+  0% {
+    r: 18;
+    opacity: 0.5;
+  }
+  100% {
+    r: 24;
+    opacity: 0;
+  }
+}
+.animate-node-pulse {
+  animation: node-pulse 1.8s ease-out infinite;
+}
+
+@keyframes node-flash {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.animate-node-flash {
+  animation: node-flash 0.3s ease-in-out 4;
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.animate-sheet-up {
+  animation: sheet-up 0.25s ease-out;
 }
