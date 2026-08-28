@@ -28,7 +28,7 @@ import {
 import { MapIsland } from '@/components/MapIsland'
 import { MapSugoroku, getNodeStatus } from '@/components/MapSugoroku'
 import { MapControls } from '@/components/MapControls'
-import { defaultSave, readSave, type Save } from '@/lib/progress'
+import { useSave } from '@/lib/progress'
 import { getProblem } from '@/lib/problems'
 
 type Toast = { id: number; message: string }
@@ -54,12 +54,11 @@ export function WorldMap() {
   const [vb, setVb] = useState<VBState>({ x: 0, y: 0, w: WORLD_W })
   const vbRef = useRef(vb)
   const initializedRef = useRef(false)
-  const [save, setSave] = useState<Save>(defaultSave)
+  const { save } = useSave()
   const [toast, setToast] = useState<Toast | null>(null)
   const [lockedNode, setLockedNode] = useState<string | null>(null)
   const [highlightedNodeId, setHighlightedNodeId] = useState<string | null>(null)
 
-  useEffect(() => setSave(readSave()), [])
   useEffect(() => {
     vbRef.current = vb
   }, [vb])
