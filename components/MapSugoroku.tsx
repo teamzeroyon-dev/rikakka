@@ -40,6 +40,16 @@ export function MapSugoroku({ k, save, highlightedNodeId }: { k: number; save: S
             🪧 じゅんびちゅう
           </text>
         ))}
+      <g opacity={nodeOpacity} style={{ pointerEvents: 'none' }} aria-hidden="true">
+        <path d="M 655 575 C 684 548, 730 548, 758 575" fill="none" stroke="#9A6B45" strokeWidth={4} strokeLinecap="round" />
+        <path d="M 675 575 L 668 628 M 738 575 L 748 622" stroke="#9A6B45" strokeWidth={4} strokeLinecap="round" />
+        <circle cx="668" cy="628" r="8" fill="#F3C84B" stroke="#9A6B45" strokeWidth={3} />
+        <circle cx="748" cy="622" r="8" fill="#F3C84B" stroke="#9A6B45" strokeWidth={3} />
+        <rect x="807" y="552" width="48" height="34" rx="5" fill="#F2A65A" stroke="#9A6B45" strokeWidth={3} />
+        <path d="M 815 552 L 815 536 Q 831 524 847 536 L 847 552" fill="none" stroke="#9A6B45" strokeWidth={3} />
+        <path d="M 816 575 H 846 M 831 560 V 578" stroke="#FFF4DD" strokeWidth={3} strokeLinecap="round" />
+        <text x="724" y="535" textAnchor="middle" fontSize={13} fontWeight={900} fill="#7A6A4E">ゴムの実験コーナー</text>
+      </g>
       {sugorokuNodes.slice(1).map((node, i) => {
         const from = sugorokuNodes[i]
         const to = node
@@ -53,8 +63,8 @@ export function MapSugoroku({ k, save, highlightedNodeId }: { k: number; save: S
             d={`M ${from.x} ${from.y} Q ${midX} ${midY} ${to.x} ${to.y}`}
             fill="none"
             stroke={color}
-            strokeWidth={4}
-            strokeDasharray="2 10"
+            strokeWidth={3}
+            strokeDasharray="2 8"
             strokeLinecap="round"
             opacity={nodeOpacity}
             style={{ pointerEvents: 'none' }}
@@ -69,7 +79,7 @@ export function MapSugoroku({ k, save, highlightedNodeId }: { k: number; save: S
         const dotColor = status === 'locked' ? '#B9BFC4' : themeColor
         return (
           <g key={node.id}>
-            <circle cx={node.x} cy={node.y} r={4} fill={dotColor} opacity={dotOpacity} style={{ pointerEvents: 'none' }} />
+            <circle cx={node.x} cy={node.y} r={3} fill={dotColor} opacity={dotOpacity} style={{ pointerEvents: 'none' }} />
             <g opacity={nodeOpacity} style={{ pointerEvents: nodeOpacity > 0.4 ? 'auto' : 'none' }}>
               {status === 'available' && (
                 <circle cx={node.x} cy={node.y} r={18} fill="none" stroke="#FFFFFF" strokeWidth={3} className="animate-node-pulse" />
@@ -78,7 +88,7 @@ export function MapSugoroku({ k, save, highlightedNodeId }: { k: number; save: S
               <circle
                 cx={node.x}
                 cy={node.y}
-                r={18}
+                r={12}
                 fill={status === 'locked' ? '#C9CFD4' : status === 'faded' ? `${themeColor}80` : themeColor}
                 stroke="#FFFFFF"
                 strokeWidth={status === 'available' ? 3 : 2}
@@ -100,9 +110,9 @@ export function MapSugoroku({ k, save, highlightedNodeId }: { k: number; save: S
               )}
               <text
                 x={node.x}
-                y={node.y + 34}
+                y={node.y + 24}
                 textAnchor="middle"
-                fontSize={13}
+                fontSize={10}
                 fontWeight={900}
                 fill="#3D3A38"
                 stroke="#FFFFFF"
