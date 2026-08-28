@@ -14,6 +14,13 @@ export async function getCurrentUser() {
   return user ?? null
 }
 
+// Cheap cookie-only read for high-frequency endpoints (e.g. heartbeat) that don't
+// need the full user row.
+export async function getCurrentUserId() {
+  const store = await cookies()
+  return store.get(COOKIE_NAME)?.value ?? null
+}
+
 export async function getUserId() {
   const user = await getCurrentUser()
   if (!user) throw new Error('Unauthorized')

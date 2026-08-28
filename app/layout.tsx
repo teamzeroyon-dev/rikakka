@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Noto_Sans_JP } from 'next/font/google'
+import { UsageTracker } from '@/components/UsageTracker'
 import './globals.css'
 
 const notoSansJP = Noto_Sans_JP({
@@ -49,6 +50,7 @@ export default function RootLayout({
   return (
     <html lang="ja" className={`light bg-background ${notoSansJP.variable}`}>
       <body className="antialiased">
+        <UsageTracker />
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

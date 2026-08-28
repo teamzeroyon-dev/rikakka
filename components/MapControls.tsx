@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { Backpack, Home, Minus, Plus, Sparkles } from 'lucide-react'
+import { Backpack, Home, Minus, Plus, Smile, Sparkles, Trophy } from 'lucide-react'
 
 export function MapControls({
   points,
@@ -23,13 +23,29 @@ export function MapControls({
         <div className="pointer-events-auto flex items-center gap-2 rounded-full border-2 border-[#0e4b69] bg-[#f7c94b] px-4 py-2 font-black text-[#3d3a38] shadow-[0_4px_0_#174d70]">
           <Sparkles className="size-5" /> {points}
         </div>
-        <Link
-          href="/bag"
-          aria-label="もちもの"
-          className="pointer-events-auto flex size-12 items-center justify-center rounded-full border-2 border-[#0e4b69] bg-[#286b8e] text-white shadow-[0_4px_0_#174d70]"
-        >
-          <Backpack className="size-6" />
-        </Link>
+        <div className="pointer-events-auto flex items-center gap-2">
+          <Link
+            href="/avatar"
+            aria-label="アバター"
+            className="flex size-12 items-center justify-center rounded-full border-2 border-[#0e4b69] bg-[#e07a9b] text-white shadow-[0_4px_0_#174d70]"
+          >
+            <Smile className="size-6" />
+          </Link>
+          <Link
+            href="/ranking"
+            aria-label="ランキング"
+            className="flex size-12 items-center justify-center rounded-full border-2 border-[#0e4b69] bg-[#f0a63e] text-white shadow-[0_4px_0_#174d70]"
+          >
+            <Trophy className="size-6" />
+          </Link>
+          <Link
+            href="/bag"
+            aria-label="もちもの"
+            className="flex size-12 items-center justify-center rounded-full border-2 border-[#0e4b69] bg-[#286b8e] text-white shadow-[0_4px_0_#174d70]"
+          >
+            <Backpack className="size-6" />
+          </Link>
+        </div>
       </div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between p-3 sm:p-4">
         {regionPill ? (
