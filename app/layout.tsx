@@ -1,6 +1,14 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
+import { Noto_Sans_JP } from 'next/font/google'
 import './globals.css'
+
+const notoSansJP = Noto_Sans_JP({
+  subsets: ['latin'],
+  weight: ['400', '700', '900'],
+  variable: '--font-noto-sans-jp',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'さわって わかる さんすう・りか',
@@ -39,7 +47,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ja" className="light bg-background">
+    <html lang="ja" className={`light bg-background ${notoSansJP.variable}`}>
       <body className="antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

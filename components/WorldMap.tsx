@@ -209,7 +209,11 @@ export function WorldMap() {
 
   const onPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
     cancelAnim()
-    e.currentTarget.setPointerCapture(e.pointerId)
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId)
+    } catch {
+      // Pointer may already be released (fast synthetic taps or some browsers); safe to ignore.
+    }
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
     if (pointers.current.size === 1) {
       tapInfo.current = { x: e.clientX, y: e.clientY, time: Date.now(), moved: false }
