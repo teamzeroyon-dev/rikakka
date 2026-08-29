@@ -24,8 +24,8 @@ export type DiagnosisResult = {
   topArchetype: Problem['archetype'] | null
 }
 
-export function computeDiagnosis(clearedIds: Record<string, boolean>): DiagnosisResult {
-  const clearedProblems = problems.filter((p) => clearedIds[p.id])
+export function computeDiagnosis(clearedIds: Record<string, unknown>): DiagnosisResult {
+  const clearedProblems = problems.filter((p) => Boolean(clearedIds[p.id]))
   const counts = new Map<Problem['archetype'], number>()
   for (const p of clearedProblems) counts.set(p.archetype, (counts.get(p.archetype) ?? 0) + 1)
 
