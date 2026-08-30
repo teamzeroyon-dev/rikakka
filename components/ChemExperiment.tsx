@@ -4,6 +4,15 @@ import type { ChemExperimentConfig } from '@/lib/quizProblems'
 
 const VB = '0 0 340 220'
 
+/** Pointer capture can throw (e.g. stale pointer id, some touch/stylus edge cases) — never let that abort a drag gesture. */
+function safeCapture(e: React.PointerEvent) {
+  try {
+    e.currentTarget.setPointerCapture(e.pointerId)
+  } catch {
+    // ignore — dragging still works via document-level pointermove/up
+  }
+}
+
 function Chip({ x, y, label, color = 'var(--chem-metal)', onPointerDown, dimmed }: { x: number; y: number; label: string; color?: string; onPointerDown?: (e: React.PointerEvent) => void; dimmed?: boolean }) {
   return (
     <g transform={`translate(${x},${y})`} onPointerDown={onPointerDown} className={onPointerDown ? 'cursor-grab active:cursor-grabbing' : ''} opacity={dimmed ? 0.35 : 1}>
@@ -26,7 +35,7 @@ function BalanceExperiment({ itemA, itemB, onDone }: { itemA: { label: string; g
 
   const down = (e: React.PointerEvent) => {
     if (placed) return
-    e.currentTarget.setPointerCapture(e.pointerId)
+    safeCapture(e)
     setDragY(0)
   }
   const move = (e: React.PointerEvent) => {
@@ -113,7 +122,7 @@ function ClayPressExperiment({ label, grams, onDone }: { label: string; grams: n
   const svgRef = useRef<SVGSVGElement>(null)
   const dragging = useRef(false)
   const down = (e: React.PointerEvent) => {
-    e.currentTarget.setPointerCapture(e.pointerId)
+    safeCapture(e)
     dragging.current = true
   }
   const move = (e: React.PointerEvent) => {
@@ -146,7 +155,7 @@ function LinearPushExperiment({ label, onDone }: { label: string; onDone: () => 
   const svgRef = useRef<SVGSVGElement>(null)
   const dragging = useRef(false)
   const down = (e: React.PointerEvent) => {
-    e.currentTarget.setPointerCapture(e.pointerId)
+    safeCapture(e)
     dragging.current = true
   }
   const move = (e: React.PointerEvent) => {
@@ -278,7 +287,7 @@ function HeatCoolExperiment({ mode, itemLabel, onDone }: { mode: 'heat-water' | 
 
   const down = (e: React.PointerEvent) => {
     if (applied) return
-    e.currentTarget.setPointerCapture(e.pointerId)
+    safeCapture(e)
     dragging.current = true
   }
   const move = (e: React.PointerEvent) => {
@@ -303,7 +312,7 @@ function HeatCoolExperiment({ mode, itemLabel, onDone }: { mode: 'heat-water' | 
         : mode === 'expand-metal'
           ? '金属がふくらんで大きくなったね'
           : '金属がちぢんで小さくなったね'
-    : `${toolLabel}のアイコンを、${itemLabel}までドラッグしよう`
+    : `${toolLabel}のアイコン���、${itemLabel}までドラッグしよう`
 
   return (
     <div className="flex flex-col items-center gap-3">
@@ -351,7 +360,7 @@ function SweepExperiment({ mode, targets, onDone }: { mode: 'evaporate' | 'magne
   const spacing = 260 / Math.max(1, targets.length)
 
   const down = (e: React.PointerEvent) => {
-    e.currentTarget.setPointerCapture(e.pointerId)
+    safeCapture(e)
     dragging.current = true
   }
   const move = (e: React.PointerEvent) => {
@@ -415,7 +424,7 @@ function CondenseExperiment({ onDone }: { onDone: () => void }) {
 
   const down = (e: React.PointerEvent) => {
     if (dropped) return
-    e.currentTarget.setPointerCapture(e.pointerId)
+    safeCapture(e)
     dragging.current = true
   }
   const move = (e: React.PointerEvent) => {
@@ -465,7 +474,7 @@ function FilterExperiment({ onDone }: { onDone: () => void }) {
 
   const down = (e: React.PointerEvent) => {
     if (poured) return
-    e.currentTarget.setPointerCapture(e.pointerId)
+    safeCapture(e)
     dragging.current = true
   }
   const move = (e: React.PointerEvent) => {
