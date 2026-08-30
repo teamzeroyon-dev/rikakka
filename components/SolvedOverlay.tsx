@@ -4,8 +4,9 @@ import { RotateCcw, ArrowRight } from 'lucide-react'
 import type { Problem } from '@/lib/problems'
 import { RealWorldScene } from '@/components/RealWorldScene'
 export function SolvedOverlay({ problem, next, onRetry }: { problem: Problem; next: Problem; onRetry: () => void }) {
+ const solvedTitle = problem.archetype === 'launch' ? 'ゴールに届いた！' : 'つり合った！'
  return <section className="flex flex-col gap-5 rounded-3xl border border-primary/20 bg-card p-6 shadow-lg" aria-live="polite">
-  <div><p className="text-2xl font-bold text-primary">つり合った！</p><p className="mt-1 text-sm text-muted-foreground">よく見つけたね。</p></div>
+  <div><p className="text-2xl font-bold text-primary">{solvedTitle}</p><p className="mt-1 text-sm text-muted-foreground">よく見つけたね。</p></div>
   <div className="flex flex-col gap-2"><p className="text-sm font-bold text-muted-foreground">きみが 見つけたこと</p><p className="leading-6">{problem.solved.discovery}</p><p className="rounded-xl bg-accent p-3 font-sans text-sm font-bold">{problem.solved.formula}</p>{problem.solved.note && <p className="text-sm leading-6 text-muted-foreground">{problem.solved.note}</p>}</div>
   <div className="flex flex-col gap-3 rounded-2xl bg-secondary p-4">
    <p className="font-bold text-secondary-foreground">{problem.solved.realWorldTitle}</p>

@@ -186,7 +186,6 @@ export function LaunchCourse({
             <g key={lane.id} onPointerDown={() => !isLaneLaunching && setSelected(lane.id)}>
               <text x="8" y={y} fontSize="11" fontWeight="bold">
                 {lane.label}
-                {lane.bandCount && lane.bandCount > 1 ? ` (${lane.bandCount}本)` : ''}
               </text>
 
               {/* track */}
