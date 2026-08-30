@@ -64,6 +64,14 @@
   --scene-figure-a: #ff9040;
   --scene-figure-b: #4ec5c1;
   --scene-accent: #e2596b;
+  --chem-water: #aee0ef;
+  --chem-water-dark: #6bb8d4;
+  --chem-flame: #ff8a3d;
+  --chem-ice: #cdeefb;
+  --chem-salt: #f4f1e8;
+  --chem-metal: #8b95a1;
+  --chem-glow: #ffd873;
+  --chem-pan: #b6a06a;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -298,4 +306,36 @@
 }
 .animate-rws-arrow-fly {
   animation: rws-arrow-fly 3.4s ease-out infinite;
+}
+
+@keyframes chem-bubble-rise {
+  0% { transform: translateY(0); opacity: 0.9; }
+  100% { transform: translateY(-46px); opacity: 0; }
+}
+.animate-chem-bubble-rise {
+  animation: chem-bubble-rise 1.1s ease-out infinite;
+}
+
+@keyframes chem-glow-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+.animate-chem-glow-pulse {
+  animation: chem-glow-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes chem-drip {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(34px); opacity: 0; }
+}
+.animate-chem-drip {
+  animation: chem-drip 0.9s ease-in infinite;
+}
+
+@keyframes chem-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-chem-fade-in {
+  animation: chem-fade-in 0.6s ease-out forwards;
 }
