@@ -8,8 +8,9 @@ const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(ma
 const POST_X = 70
 const TRACK_END_X = 348
 const PX_PER_CM_PULL = 5
+const CAR_WIDTH = 34
 
-type Goal = { center: number; tolerance: number }
+type Goal = { minCm: number }
 type Achieved = { label: string; stretch: number; distance: number }
 
 function rubberStrand(x1: number, y1: number, x2: number, y2: number, amplitude: number, segments: number) {
@@ -44,18 +45,31 @@ export function LaunchCourse({
   const [dragging, setDragging] = useState(false)
   const [carOffset, setCarOffset] = useState<Record<string, number>>({})
   const [launching, setLaunching] = useState<Record<string, boolean>>({})
+  const [restDistance, setRestDistance] = useState<Record<string, number | null>>({})
   const animRef = useRef<number | null>(null)
 
   // Randomize goals on the client only after mount, so each attempt (and each fresh
   // mount after a retry) gets a different target and the answer can't be memorized.
   useEffect(() => {
     const g: Record<string, Goal> = {}
+    const groupPicks: Record<string, number> = {}
     for (const lane of lanes) {
-      const [min, max] = lane.targetStretchRange
-      const targetStretch = min + Math.floor(Math.random() * (max - min + 1))
-      const center = 4 * targetStretch * targetStretch
-      const tolerance = Math.max(20, 4 * targetStretch)
-      g[lane.id] = { center, tolerance }
+      let minCm: number
+      if (lane.shareGoalGroup) {
+        if (!(lane.shareGoalGroup in groupPicks)) {
+          const [dmin, dmax] = lane.targetDistanceRange ?? [60, 100]
+          groupPicks[lane.shareGoalGroup] = dmin + Math.floor(Math.random() * (dmax - dmin + 1))
+        }
+        minCm = groupPicks[lane.shareGoalGroup]
+      } else if (lane.targetDistanceRange) {
+        const [dmin, dmax] = lane.targetDistanceRange
+        minCm = dmin + Math.floor(Math.random() * (dmax - dmin + 1))
+      } else {
+        const [min, max] = lane.targetStretchRange ?? [6, 13]
+        const targetStretch = min + Math.floor(Math.random() * (max - min + 1))
+        minCm = 4 * (lane.bandCount ?? 1) * targetStretch * targetStretch
+      }
+      g[lane.id] = { minCm }
     }
     setGoals(g)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,13 +89,26 @@ export function LaunchCourse({
     }))
   }
 
+  const startDrag = (laneId: string) => {
+    if (launching[laneId]) return
+    setSelected(laneId)
+    setDragging(true)
+    setRestDistance((r) => ({ ...r, [laneId]: null }))
+  }
+
+  const resetLane = (laneId: string) => {
+    setStretches((s) => ({ ...s, [laneId]: 0 }))
+    setRestDistance((r) => ({ ...r, [laneId]: null }))
+  }
+
   const fire = (id = selected) => {
     if (!goals) return
     const stretch = stretches[id] ?? 0
     setDragging(false)
     if (stretch <= 0 || launching[id]) return
-    const distance = 4 * stretch * stretch
-    const travelPx = Math.min(distance * scale, TRACK_END_X - POST_X - 17)
+    const bandCount = lanes.find((l) => l.id === id)?.bandCount ?? 1
+    const distance = 4 * bandCount * stretch * stretch
+    const travelPx = Math.min(distance * scale, TRACK_END_X - POST_X)
 
     setLaunching((l) => ({ ...l, [id]: true }))
     const t0 = performance.now()
@@ -95,17 +122,17 @@ export function LaunchCourse({
       } else {
         animRef.current = null
         setLaunching((l) => ({ ...l, [id]: false }))
-        setStretches((s) => ({ ...s, [id]: 0 }))
-        setCarOffset((c) => ({ ...c, [id]: 0 }))
+        setRestDistance((r) => ({ ...r, [id]: distance }))
         setRecords((r) => {
-          const updated = { ...r, [id]: [...(r[id] ?? []), { stretch, distance }] }
-          const allDone = lanes.every((l) => (updated[l.id] ?? []).some((x) => Math.abs(x.distance - goals[l.id].center) <= goals[l.id].tolerance))
+          const hit = distance >= goals[id].minCm
+          const updated = { ...r, [id]: [...(r[id] ?? []), { stretch, distance, hit }] }
+          const allDone = lanes.every((l) => (updated[l.id] ?? []).some((x) => x.hit))
           if (allDone) {
             const achieved: Achieved[] = lanes.map((l) => {
-              const hit = (updated[l.id] ?? []).find((x) => Math.abs(x.distance - goals[l.id].center) <= goals[l.id].tolerance)!
-              return { label: l.label, stretch: hit.stretch, distance: Math.round(hit.distance) }
+              const hitRecord = (updated[l.id] ?? []).find((x) => x.hit)!
+              return { label: l.label, stretch: hitRecord.stretch, distance: Math.round(hitRecord.distance) }
             })
-            setTimeout(() => onSolved(achieved), 400)
+            setTimeout(() => onSolved(achieved), 600)
           }
           return updated
         })
@@ -115,6 +142,9 @@ export function LaunchCourse({
   }
 
   const all = lanes.flatMap((l) => records[l.id] ?? [])
+  const currentRest = restDistance[selected] ?? null
+  const currentGoal = goals?.[selected]
+  const currentHit = currentRest != null && currentGoal ? currentRest >= currentGoal.minCm : null
 
   if (!goals) {
     return (
@@ -127,7 +157,7 @@ export function LaunchCourse({
   return (
     <div className="flex flex-col gap-3">
       <svg
-        viewBox={`0 0 360 ${lanes.length === 1 ? 130 : 230}`}
+        viewBox={`0 0 360 ${lanes.length === 1 ? 130 : lanes.length * 105 + 10}`}
         className="w-full"
         style={{ touchAction: 'none' }}
         onPointerMove={(e) => dragging && setStretch(e)}
@@ -137,10 +167,15 @@ export function LaunchCourse({
           const goal = goals[lane.id]
           const y = i * 105 + 20
           const stretch = stretches[lane.id] ?? 0
-          const hookX = POST_X - stretch * PX_PER_CM_PULL
-          const offset = carOffset[lane.id] ?? 0
-          const carX = launching[lane.id] ? POST_X + offset : hookX
-          const goalX = POST_X + goal.center * scale
+          const rest = restDistance[lane.id] ?? null
+          const isLaneLaunching = !!launching[lane.id]
+          const frontBumperX = isLaneLaunching
+            ? POST_X + (carOffset[lane.id] ?? 0)
+            : rest != null
+              ? POST_X + rest * scale
+              : POST_X - stretch * PX_PER_CM_PULL
+          const carX = frontBumperX - CAR_WIDTH
+          const goalX = POST_X + goal.minCm * scale
           const tension = stretch / maxStretch
           const amplitude = 7 * (1 - tension) + 0.5
           const bandColor = `rgb(${217 + Math.round(38 * tension)}, ${83 - Math.round(50 * tension)}, ${79 - Math.round(50 * tension)})`
@@ -148,18 +183,25 @@ export function LaunchCourse({
           const rulerStartX = POST_X - maxStretch * PX_PER_CM_PULL
 
           return (
-            <g key={lane.id} onPointerDown={() => !isLaunching && setSelected(lane.id)}>
+            <g key={lane.id} onPointerDown={() => !isLaneLaunching && setSelected(lane.id)}>
               <text x="8" y={y} fontSize="11" fontWeight="bold">
                 {lane.label}
+                {lane.bandCount && lane.bandCount > 1 ? ` (${lane.bandCount}本)` : ''}
               </text>
 
               {/* track */}
               <line x1={POST_X} y1={y + 42} x2={TRACK_END_X} y2={y + 42} stroke="#B9A88A" strokeWidth="3" />
 
-              {/* goal zone */}
-              <rect x={goalX - goal.tolerance * scale} y={y + 18} width={goal.tolerance * 2 * scale} height="48" fill="#5FB85F" opacity=".3" />
-              <text x={goalX} y={y + 15} textAnchor="middle" fontSize="12">
-                🏁 {Math.round(goal.center)}cm
+              {/* success zone: reaching or passing the goal line counts */}
+              <rect x={goalX} y={y + 37} width={Math.max(0, TRACK_END_X - goalX)} height="10" fill="#5FB85F" opacity="0.22" />
+
+              {/* goal line */}
+              <line x1={goalX} y1={y + 8} x2={goalX} y2={y + 50} stroke="#3D8B3D" strokeWidth="2" strokeDasharray="4 3" />
+              <text x={goalX} y={y + 4} textAnchor="middle" fontSize="14">
+                🏁
+              </text>
+              <text x={goalX} y={y + 62} textAnchor="middle" fontSize="9" fontWeight="bold" fill="#3D8B3D">
+                {Math.round(goal.minCm)}cmまで
               </text>
 
               {/* pull-back ruler */}
@@ -175,8 +217,8 @@ export function LaunchCourse({
                   </g>
                 )
               })}
-              {selected === lane.id && stretch > 0 && (
-                <g style={{ transition: 'transform 60ms linear' }} transform={`translate(${hookX}, ${rulerY})`}>
+              {selected === lane.id && stretch > 0 && rest == null && (
+                <g style={{ transition: 'transform 60ms linear' }} transform={`translate(${POST_X - stretch * PX_PER_CM_PULL}, ${rulerY})`}>
                   <path d="M 0 -9 L -5 -16 L 5 -16 Z" fill="#D9534F" />
                   <text x="0" y="-19" textAnchor="middle" fontSize="9" fontWeight="bold" fill="#D9534F">
                     {stretch}cm
@@ -187,35 +229,32 @@ export function LaunchCourse({
               {/* post */}
               <line x1={POST_X} y1={y + 10} x2={POST_X} y2={y + 42} stroke="#7A6A52" strokeWidth="5" />
 
-              {/* rubber strands */}
-              <path
-                d={rubberStrand(POST_X, y + 10, carX + 17, y + 10, amplitude, 6)}
-                fill="none"
-                stroke={bandColor}
-                strokeWidth={3 + tension}
-                strokeLinecap="round"
-              />
-              <path
-                d={rubberStrand(POST_X, y + 10, carX + 17, y + 20, amplitude, 6)}
-                fill="none"
-                stroke={bandColor}
-                strokeWidth={3 + tension}
-                strokeLinecap="round"
-              />
+              {/* rubber strands (only visible while pulled back, not after launch settles) */}
+              {rest == null && (
+                <>
+                  <path
+                    d={rubberStrand(POST_X, y + 10, frontBumperX, y + 10, amplitude, 6)}
+                    fill="none"
+                    stroke={bandColor}
+                    strokeWidth={3 + tension}
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d={rubberStrand(POST_X, y + 10, frontBumperX, y + 20, amplitude, 6)}
+                    fill="none"
+                    stroke={bandColor}
+                    strokeWidth={3 + tension}
+                    strokeLinecap="round"
+                  />
+                </>
+              )}
 
               {/* car */}
-              <g
-                onPointerDown={(e) => {
-                  if (isLaunching) return
-                  e.stopPropagation()
-                  setSelected(lane.id)
-                  setDragging(true)
-                }}
-              >
-                {launching[lane.id] && (
-                  <g opacity={0.5}>
-                    <line x1={carX - 6} y1={y + 10} x2={carX - 16} y2={y + 10} stroke="#B9A88A" strokeWidth="2" strokeDasharray="2 3" />
-                  </g>
+              <g onPointerDown={(e) => { e.stopPropagation(); startDrag(lane.id) }}>
+                {rest != null && !isLaneLaunching && (
+                  <text x={carX + 17} y={y - 8} textAnchor="middle" fontSize="14">
+                    {rest >= goal.minCm ? '🎉' : '😅'}
+                  </text>
                 )}
                 <rect x={carX} y={y - 1} width="34" height="22" rx="6" fill="#FF9040" />
                 <circle cx={carX + 8} cy={y + 22} r="4" fill="#3D3A38" />
@@ -232,6 +271,12 @@ export function LaunchCourse({
         <strong className="text-2xl">{current}cm</strong>
       </div>
 
+      {currentHit != null && (
+        <p className={`rounded-xl px-4 py-2 text-center text-sm font-bold ${currentHit ? 'bg-[#5FB85F]/20 text-[#3D8B3D]' : 'bg-accent text-muted-foreground'}`}>
+          {currentHit ? '🎉 ゴールに とどいた！' : `😅 まだ ${Math.round((currentGoal?.minCm ?? 0) - (currentRest ?? 0))}cm 足りない。もっと のばそう`}
+        </p>
+      )}
+
       <div className="flex gap-3">
         <button
           onClick={() => fire()}
@@ -241,7 +286,7 @@ export function LaunchCourse({
           🚀 はなす
         </button>
         <button
-          onClick={() => setStretches((s) => ({ ...s, [selected]: 0 }))}
+          onClick={() => resetLane(selected)}
           disabled={isLaunching}
           className="min-h-12 rounded-xl border border-border px-4 font-bold disabled:opacity-50"
         >

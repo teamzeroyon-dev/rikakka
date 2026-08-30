@@ -1,7 +1,18 @@
 export type Weight = { id: string; grams: number; position: number; movable: boolean; gramsEditable: boolean }
 export type RealWorldVisual = 'seesaw' | 'nail-puller' | 'scale' | 'slingshot' | 'archery'
 export type BalanceProblem = { id: string; archetype: 'balance'; title: string; emoji: string; difficultyLabel: 'かんたん' | 'ふつう' | 'やってみる'; prompt: string; notches: number; weights: Weight[]; gramsRange?: { min: number; max: number; step: number }; solved: { discovery: string; formula: string; realWorldTitle: string; realWorldBody: string; realWorldVisual: RealWorldVisual; note?: string } }
-export type LaunchLane = { id: string; label: string; targetStretchRange: [number, number] }
+export type LaunchLane = {
+ id: string
+ label: string
+ /** 力の強さ（ゴムの本数）。省略時は1本。 */
+ bandCount?: number
+ /** 目標の「伸ばす長さ」の範囲から距離を逆算する（従来方式） */
+ targetStretchRange?: [number, number]
+ /** 目標の「進む距離」の範囲を直接指定する（本数比較など） */
+ targetDistanceRange?: [number, number]
+ /** 同じキーを持つレーン同士は、同じ目標距離を共有する（本数比較で同じゴールを使うため） */
+ shareGoalGroup?: string
+}
 export type LaunchProblem = { id: string; archetype: 'launch'; title: string; emoji: string; difficultyLabel: 'かんたん' | 'ふつう' | 'やってみる'; grade: 3; subject: 'science'; curriculum: { code: string; unit: string }; prompt: string; courseLengthCm: number; maxStretchCm: number; lanes: LaunchLane[]; solved: { discovery: string; formula: string; realWorldTitle: string; realWorldBody: string; realWorldVisual: RealWorldVisual; note?: string } }
 export type Problem = BalanceProblem | LaunchProblem
 
@@ -13,6 +24,8 @@ const balanceProblems: BalanceProblem[] = [
 const launchProblems: LaunchProblem[] = [
  { id: 'rubber-01', archetype: 'launch', title: 'ゴムの力 ①', emoji: '🚗', difficultyLabel: 'かんたん', grade: 3, subject: 'science', curriculum: { code: '理科 3年 A(2)', unit: '風とゴムの力の働き' }, prompt: '車を後ろに引っ張って離そう。ゴールのところで止められるかな？', courseLengthCm: 950, maxStretchCm: 15, lanes: [{ id: 'a', label: 'コース', targetStretchRange: [6, 13] }], solved: { discovery: 'ゴムを長く伸ばすほど、車は遠くまで進む', formula: '伸ばした長さと進んだ距離を確かめよう', realWorldTitle: 'これ、どこで使われてる？', realWorldBody: 'パチンコ、ゴム鉄砲、ボウガン、それから車のサスペンション。ぜんぶ「もとに戻ろうとする力」を使っているよ。', realWorldVisual: 'slingshot' } },
  { id: 'rubber-02', archetype: 'launch', title: 'ゴムの力 ②', emoji: '🏁', difficultyLabel: 'ふつう', grade: 3, subject: 'science', curriculum: { code: '理科 3年 A(2)', unit: '風とゴムの力の働き' }, prompt: '今度はゴールが2つ。近いゴールと遠いゴール、両方止めてみよう。', courseLengthCm: 950, maxStretchCm: 15, lanes: [{ id: 'a', label: '近いゴール', targetStretchRange: [3, 6] }, { id: 'b', label: '遠いゴール', targetStretchRange: [10, 14] }], solved: { discovery: '近いゴールは短く、遠いゴールは長く伸ばす', formula: '伸ばした長さと進んだ距離を確かめよう', realWorldTitle: 'これ、どこで使われてる？', realWorldBody: '距離をねらって飛ばすものは、ぜんぶこの考え方。アーチェリー、水鉄砲、それから消防車のホース。', realWorldVisual: 'archery', note: '記録を縦に並べて見てみよう。伸ばした長さと進んだ距離に、決まりが見えるよ' } },
+ { id: 'rubber-03', archetype: 'launch', title: 'ゴムの力 ③', emoji: '🧵', difficultyLabel: 'ふつう', grade: 3, subject: 'science', curriculum: { code: '理科 3年 A(2)', unit: '風とゴムの力の働き' }, prompt: '同じゴールに、ゴム1本と2本で挑戦しよう。同じところまで届かせるのに、伸ばす長さは同じかな？', courseLengthCm: 950, maxStretchCm: 12, lanes: [{ id: 'a', label: 'ゴム 1本', bandCount: 1, targetDistanceRange: [70, 110], shareGoalGroup: 'g' }, { id: 'b', label: 'ゴム 2本', bandCount: 2, targetDistanceRange: [70, 110], shareGoalGroup: 'g' }], solved: { discovery: 'ゴムの本数が増えると、同じ伸ばす長さでも車を押す力が大きくなる', formula: '同じゴールでも、2本のときは 短く伸ばすだけで届く', realWorldTitle: 'これ、どこで使われてる？', realWorldBody: '輪ゴム鉄砲やゴム動力の模型飛行機は、ゴムを増やしたり束ねたりして力を強くしているよ。', realWorldVisual: 'slingshot', note: '1本と2本で、同じゴールに届くための伸ばす長さを比べてみよう' } },
+ { id: 'rubber-04', archetype: 'launch', title: 'ゴムの力 ④', emoji: '🎯', difficultyLabel: 'やってみる', grade: 3, subject: 'science', curriculum: { code: '理科 3年 A(2)', unit: '風とゴムの力の働き' }, prompt: '3つのゴールがあるよ。近い・ふつう・遠い、全部届かせてみよう。', courseLengthCm: 950, maxStretchCm: 15, lanes: [{ id: 'a', label: '近いゴール', targetStretchRange: [2, 4] }, { id: 'b', label: 'ふつうのゴール', targetStretchRange: [6, 9] }, { id: 'c', label: '遠いゴール', targetStretchRange: [11, 14] }], solved: { discovery: '近い・ふつう・遠いで、伸ばす長さの決まりを確かめよう', formula: '伸ばした長さと進んだ距離を確かめよう', realWorldTitle: 'これ、どこで使われてる？', realWorldBody: 'ゴムを使った的当てゲームや輪ゴム鉄砲は、ねらう距離によって引く強さを変えているよ。', realWorldVisual: 'archery', note: '記録を3つ並べて見てみよう。近い・遠いで伸ばす長さがどう変わるか、決まりが見えるよ' } },
 ]
 export const problems: Problem[] = [...balanceProblems, ...launchProblems]
 export function getProblem(id: string) { return problems.find((p) => p.id === id) }
