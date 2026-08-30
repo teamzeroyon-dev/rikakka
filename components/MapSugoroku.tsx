@@ -1,16 +1,16 @@
-import { mapRegions, sugorokuNodes, themeColors, type SugorokuNode } from '@/lib/world'
+import { getPrevNodeInRegion, mapRegions, sugorokuNodes, themeColors, type SugorokuNode } from '@/lib/world'
 import { lerpClamp } from '@/lib/viewbox'
 import { getProblem } from '@/lib/problems'
+import { getChemStage } from '@/lib/quizProblems'
 import { isFaded } from '@/lib/economy'
 import type { Save } from '@/lib/progress'
 
 export type NodeStatus = 'cleared' | 'available' | 'locked' | 'faded'
 
-export function getNodeStatus(node: SugorokuNode, index: number, save: Save): NodeStatus {
+export function getNodeStatus(node: SugorokuNode, prevNode: SugorokuNode | null, save: Save): NodeStatus {
   const record = save.cleared[node.id]
   if (record) return isFaded(record.lastClearedAt) ? 'faded' : 'cleared'
-  const prev = sugorokuNodes[index - 1]
-  const unlocked = index === 0 || (prev ? !!save.cleared[prev.id] : false)
+  const unlocked = !prevNode || !!save.cleared[prevNode.id]
   return unlocked ? 'available' : 'locked'
 }
 
@@ -53,7 +53,8 @@ export function MapSugoroku({ k, save, highlightedNodeId }: { k: number; save: S
       {sugorokuNodes.slice(1).map((node, i) => {
         const from = sugorokuNodes[i]
         const to = node
-        const status = getNodeStatus(to, i + 1, save)
+        if (from.regionId !== to.regionId) return null
+        const status = getNodeStatus(to, from, save)
         const color = status === 'locked' ? '#B9BFC4' : themeColors[to.theme]
         const midX = (from.x + to.x) / 2
         const midY = (from.y + to.y) / 2 - 14
@@ -71,9 +72,9 @@ export function MapSugoroku({ k, save, highlightedNodeId }: { k: number; save: S
           />
         )
       })}
-      {sugorokuNodes.map((node, index) => {
-        const status = getNodeStatus(node, index, save)
-        const implemented = !!getProblem(node.id)
+      {sugorokuNodes.map((node) => {
+        const status = getNodeStatus(node, getPrevNodeInRegion(node.id), save)
+        const implemented = !!getProblem(node.id) || !!getChemStage(node.id)
         const themeColor = themeColors[node.theme]
         const highlighted = highlightedNodeId === node.id
         const dotColor = status === 'locked' ? '#B9BFC4' : themeColor
