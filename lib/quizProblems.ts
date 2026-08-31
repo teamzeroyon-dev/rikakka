@@ -413,7 +413,7 @@ export const chemStages: ChemStage[] = [
     title: 'ものが燃える！',
     emoji: '🔥',
     curriculum: { code: '理科 6年', unit: 'ものの燃え方と空気' },
-    learningLine: '燃えている物にふたをして空気を遮ると、火は消えてしまうよ。燃えるには空気が必要なんだ！',
+    learningLine: '燃えている物にふたをして空気を止めると、火は消えてしまうよ。燃えるには空気が必要なんだ！',
     experiment: { kind: 'combustion' },
     normal: {
       prompt: '燃えている物を容器で覆って空気を遮ると、燃え続けることができなくなりました。このことから何が分かる？',
