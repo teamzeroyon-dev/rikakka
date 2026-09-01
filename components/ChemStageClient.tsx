@@ -31,7 +31,7 @@ export function ChemStageClient({ id }: { id: string }) {
             <ArrowLeft />
           </Link>
           <h1 className="text-xl font-bold">
-            {stage.emoji} {stage.title}
+            {stage.title}
           </h1>
         </header>
 

@@ -33,7 +33,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm rounded-3xl border-2 border-[#0e4b69] bg-[#fffbf5] p-6 shadow-[0_6px_0_#174d70]">
         <div className="mb-5 flex flex-col items-center gap-2 text-center">
           <span className="text-4xl" aria-hidden="true">
-            ⚖️
+            
           </span>
           <h1 className="text-xl font-black text-[#3d3a38]">さわって わかる さんすう・りか</h1>
           <p className="text-sm leading-6 text-[#8a8478]">なまえと とどうふけんを えらんで はじめよう</p>

@@ -383,7 +383,7 @@ export function WorldMap() {
                   className="flex size-12 items-center justify-center rounded-xl text-lg font-black text-white"
                   style={{ backgroundColor: themeColors[prevOfLocked.theme] }}
                 >
-                  ⚖
+                  
                 </span>
                 <span className="flex-1">
                   <span className="block text-sm font-black text-[#3d3a38]">{prevOfLocked.label}</span>

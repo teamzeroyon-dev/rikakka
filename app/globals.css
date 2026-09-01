@@ -288,14 +288,22 @@
   animation: rws-sling-fly 3.4s ease-out infinite;
 }
 
-@keyframes rws-bow-pull {
-  0%, 8% { transform: translateX(0); }
-  42%, 55% { transform: translateX(-22px); }
-  62% { transform: translateX(4px); }
-  75%, 100% { transform: translateX(0); }
+@keyframes rws-bow-cycle {
+  0%, 10% { transform: rotate(0deg); }
+  42%, 56% { transform: rotate(-2deg); }
+  70%, 100% { transform: rotate(0deg); }
 }
-.animate-rws-bow-pull {
-  animation: rws-bow-pull 3.4s ease-in-out infinite;
+.animate-rws-bow-cycle {
+  animation: rws-bow-cycle 3.4s ease-in-out infinite;
+  transform-box: fill-box;
+}
+@keyframes rws-bow-string {
+  0%, 10%, 70%, 100% { transform: translateX(0); }
+  42%, 56% { transform: translateX(-24px); }
+}
+.animate-rws-bow-string {
+  animation: rws-bow-string 3.4s ease-in-out infinite;
+  transform-box: fill-box;
 }
 
 @keyframes rws-arrow-fly {

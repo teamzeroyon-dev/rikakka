@@ -37,7 +37,7 @@ export function MapSugoroku({ k, save, highlightedNodeId }: { k: number; save: S
             opacity={nodeOpacity}
             style={{ pointerEvents: 'none' }}
           >
-            🪧 じゅんびちゅう
+             じゅんびちゅう
           </text>
         ))}
       <g opacity={nodeOpacity} style={{ pointerEvents: 'none' }} aria-hidden="true">
@@ -96,7 +96,7 @@ export function MapSugoroku({ k, save, highlightedNodeId }: { k: number; save: S
               />
               {status === 'cleared' && (
                 <text x={node.x + 6} y={node.y + 8.5} fontSize={8.5} fontWeight={900} fill="#3D8A3D" stroke="#FFFFFF" strokeWidth={2} paintOrder="stroke">
-                  ✓
+                  
                 </text>
               )}
               {status === 'faded' && (

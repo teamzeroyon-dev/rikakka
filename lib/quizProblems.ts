@@ -29,7 +29,6 @@ export type ChemStage = {
   id: string
   index: number
   title: string
-  emoji: string
   curriculum: { code: string; unit: string }
   learningLine: string
   experiment: ChemExperimentConfig
@@ -44,8 +43,7 @@ export const chemStages: ChemStage[] = [
     id: 'chem-01',
     index: 1,
     title: 'ものの重さ',
-    emoji: '⚖️',
-    curriculum: { code: '理科 3年', unit: 'ものと重さ' },
+      curriculum: { code: '理科 3年', unit: 'ものと重さ' },
     learningLine: '木・金属・プラスチックなど、大きさが同じくらいでも重さはちがうんだよ！',
     experiment: { kind: 'balance', itemA: { label: '木', grams: 10, color: '#c98a4b' }, itemB: { label: '金属', grams: 26, color: '#8b95a1' } },
     normal: {
@@ -69,8 +67,7 @@ export const chemStages: ChemStage[] = [
     id: 'chem-02',
     index: 2,
     title: '形を変えたら重さは変わる？',
-    emoji: '🧱',
-    curriculum: { code: '理科 3年', unit: 'ものと重さ' },
+      curriculum: { code: '理科 3年', unit: 'ものと重さ' },
     learningLine: '粘土の形を変えても、粘土そのものは何も変わっていないよ。重さはどうなるかな？',
     experiment: { kind: 'clay-press', label: '粘土', grams: 40 },
     normal: {
@@ -94,8 +91,7 @@ export const chemStages: ChemStage[] = [
     id: 'chem-03',
     index: 3,
     title: '体積と重さ',
-    emoji: '📦',
-    curriculum: { code: '理科 3年', unit: 'ものと重さ' },
+      curriculum: { code: '理科 3年', unit: 'ものと重さ' },
     learningLine: '同じくらいの大きさ（体積）でも、金属の方がぎゅっと重いんだよ！',
     experiment: { kind: 'balance', itemA: { label: '木', grams: 10, color: '#c98a4b' }, itemB: { label: '金属', grams: 26, color: '#8b95a1' } },
     normal: {
@@ -119,8 +115,7 @@ export const chemStages: ChemStage[] = [
     id: 'chem-04',
     index: 4,
     title: '空気って重い？',
-    emoji: '🎈',
-    curriculum: { code: '理科 4年', unit: '空気と水の性質' },
+      curriculum: { code: '理科 4年', unit: '空気と水の性質' },
     learningLine: '目には見えない空気にも、実は重さがあるんだよ！',
     experiment: { kind: 'balance', itemA: { label: 'ぬいた風船', grams: 5, color: '#e2596b' }, itemB: { label: '空気入り風船', grams: 6, color: '#e2596b' } },
     normal: {
@@ -144,8 +139,7 @@ export const chemStages: ChemStage[] = [
     id: 'chem-05',
     index: 5,
     title: '空気の性質',
-    emoji: '💉',
-    curriculum: { code: '理科 4年', unit: '空気と水の性質' },
+      curriculum: { code: '理科 4年', unit: '空気と水の性質' },
     learningLine: '注射器に閉じ込めた空気を押すと、体積が小さくなるよ！',
     experiment: { kind: 'linear-push', label: '空気' },
     normal: {
@@ -169,8 +163,7 @@ export const chemStages: ChemStage[] = [
     id: 'chem-06',
     index: 6,
     title: '空気は縮む！',
-    emoji: '🔽',
-    curriculum: { code: '理科 4年', unit: '空気と水の性質' },
+      curriculum: { code: '理科 4年', unit: '空気と水の性質' },
     learningLine: '注射器に閉じ込めた空気を押すと体積が小さくなり、手を離すと元に戻ろうとするよ！',
     experiment: { kind: 'linear-push', label: '空気' },
     normal: {
@@ -194,8 +187,7 @@ export const chemStages: ChemStage[] = [
     id: 'chem-07',
     index: 7,
     title: '水は縮む？',
-    emoji: '💧',
-    curriculum: { code: '理科 4年', unit: '空気と水の性質' },
+      curriculum: { code: '理科 4年', unit: '空気と水の性質' },
     learningLine: '空気と水を同じように押すと、空気はよく縮むけど、水はほとんど縮まないんだよ！',
     experiment: { kind: 'linear-push', label: '空気と水', compareWater: true },
     normal: {
@@ -219,8 +211,7 @@ export const chemStages: ChemStage[] = [
     id: 'chem-08',
     index: 8,
     title: 'あたためるとどうなる？',
-    emoji: '🌡️',
-    curriculum: { code: '理科 4年', unit: 'もののあたたまり方' },
+      curriculum: { code: '理科 4年', unit: 'もののあたたまり方' },
     learningLine: '空気はあたためると体積が大きくなり、冷やすと小さくなるよ！',
     experiment: { kind: 'heat-cool', mode: 'heat-air', itemLabel: '空気' },
     normal: {
@@ -244,8 +235,7 @@ export const chemStages: ChemStage[] = [
     id: 'chem-09',
     index: 9,
     title: '水の三態変化',
-    emoji: '🧊',
-    curriculum: { code: '理科 4年', unit: '水のすがた' },
+      curriculum: { code: '理科 4年', unit: '水のすがた' },
     learningLine: '水は、冷やすと氷に、温めると水蒸気に、温度によって姿を変えるんだよ！',
     experiment: { kind: 'three-state' },
     normal: {
@@ -269,8 +259,7 @@ export const chemStages: ChemStage[] = [
     id: 'chem-10',
     index: 10,
     title: 'ものを水に入れよう！',
-    emoji: '🥤',
-    curriculum: { code: '理科 5年', unit: 'もののとけ方' },
+      curriculum: { code: '理科 5年', unit: 'もののとけ方' },
     learningLine: '食塩は水にとけて見えなくなるけど、砂は水にとけないで底に残るよ！',
     experiment: {
       kind: 'dissolve',
@@ -305,13 +294,12 @@ export const chemStages: ChemStage[] = [
     id: 'chem-11',
     index: 11,
     title: 'とけたものはどこ？',
-    emoji: '🧂',
-    curriculum: { code: '理科 5年', unit: 'もののとけ方' },
+      curriculum: { code: '理科 5年', unit: 'もののとけ方' },
     learningLine: '食塩水から水を蒸発させると、とけていた食塩が出てくるよ。食塩は消えたわけじゃないんだ！',
     experiment: { kind: 'evaporate-salt' },
     normal: {
       prompt: '食塩を水に溶かした後、水を蒸発させると食塩が残りました。このことから何が分かる？',
-      choices: [{ id: 'A', text: '食塩は消えたのではなく、水に溶けていた' }, { id: 'B', text: '食塩は水になった' }, { id: 'C', text: '食塩は空気になった' }],
+      choices: [{ id: 'A', text: '食塩は消えたのではなく、水に溶けていた' }, { id: 'B', text: '食塩は水になった' }, { id: 'C', text: '食��は空気になった' }],
       correctId: 'A',
     },
     easy: {
@@ -320,7 +308,7 @@ export const chemStages: ChemStage[] = [
       correctId: 'A',
     },
     retry: {
-      prompt: '食塩水から水をなくすと食塩が出てきました。なぜ？',
+      prompt: '食塩水から水をなくすと食塩��出てきました。なぜ？',
       choices: [{ id: 'A', text: '水に溶けていた食塩が残ったから' }, { id: 'B', text: '新しい食塩が生まれたから' }, { id: 'C', text: '水が食塩に変わったから' }],
       correctId: 'A',
     },
@@ -330,8 +318,7 @@ export const chemStages: ChemStage[] = [
     id: 'chem-12',
     index: 12,
     title: 'とけても重さは変わらない？',
-    emoji: '⚖️',
-    curriculum: { code: '理科 5年', unit: 'もののとけ方' },
+      curriculum: { code: '理科 5年', unit: 'もののとけ方' },
     learningLine: '食塩を水にとかしても、全体の重さは水と食塩を合わせた重さのまま変わらないよ！',
     experiment: { kind: 'conserve-weight', itemA: { label: '水', grams: 50 }, itemB: { label: '食塩', grams: 10 } },
     normal: {
@@ -355,8 +342,7 @@ export const chemStages: ChemStage[] = [
     id: 'chem-13',
     index: 13,
     title: 'どこまでとける？',
-    emoji: '🥄',
-    curriculum: { code: '理科 5年', unit: 'もののとけ方' },
+      curriculum: { code: '理科 5年', unit: 'もののとけ方' },
     learningLine: '水にとける食塩の量には限りがあるよ。水の量を増やすと、もっととけるようになるんだ！',
     experiment: { kind: 'dissolve', cups: [{ label: '水100mL', items: [{ label: '食塩', behavior: 'dissolve', limit: 6 }] }] },
     normal: {
@@ -380,8 +366,7 @@ export const chemStages: ChemStage[] = [
     id: 'chem-14',
     index: 14,
     title: '温度で変わる？',
-    emoji: '🌡️',
-    curriculum: { code: '理科 5年', unit: 'もののとけ方' },
+      curriculum: { code: '理科 5年', unit: 'もののとけ方' },
     learningLine: 'あたたかい水は、冷たい水よりも食塩をたくさんとかせるよ。温度で溶ける量が変わるんだ！',
     experiment: {
       kind: 'dissolve',
@@ -411,8 +396,7 @@ export const chemStages: ChemStage[] = [
     id: 'chem-15',
     index: 15,
     title: 'ものが燃える！',
-    emoji: '🔥',
-    curriculum: { code: '理科 6年', unit: 'ものの燃え方と空気' },
+      curriculum: { code: '理科 6年', unit: 'ものの燃え方と空気' },
     learningLine: '燃えている物にふたをして空気を止めると、火は消えてしまうよ。燃えるには空気が必要なんだ！',
     experiment: { kind: 'combustion' },
     normal: {
@@ -436,8 +420,7 @@ export const chemStages: ChemStage[] = [
     id: 'chem-16',
     index: 16,
     title: '水溶液ってなんだ？',
-    emoji: '🧪',
-    curriculum: { code: '理科 6年', unit: '水溶液の性質' },
+      curriculum: { code: '理科 6年', unit: '水溶液の性質' },
     learningLine: '食塩が水にとけて、すきとおった液になったものを「水溶液」というんだよ！',
     experiment: { kind: 'dissolve', cups: [{ label: '水', items: [{ label: '食塩', behavior: 'dissolve' }] }] },
     normal: {
@@ -461,8 +444,7 @@ export const chemStages: ChemStage[] = [
     id: 'chem-17',
     index: 17,
     title: '酸性？中性？アルカリ性？',
-    emoji: '📄',
-    curriculum: { code: '理科 6年', unit: '水溶液の性質' },
+      curriculum: { code: '理科 6年', unit: '水溶液の性質' },
     learningLine: '水溶液には酸性・中性・アルカリ性があり、リトマス紙の色の変化で調べられるよ！',
     experiment: {
       kind: 'litmus',
@@ -493,8 +475,7 @@ export const chemStages: ChemStage[] = [
     id: 'chem-18',
     index: 18,
     title: '水溶液と金属',
-    emoji: '🔩',
-    curriculum: { code: '理科 6年', unit: '水溶液の性質' },
+      curriculum: { code: '理科 6年', unit: '水溶液の性質' },
     learningLine: '水溶液の中には、金属を入れるとあわを出して金属を変化させるものがあるんだよ！',
     experiment: {
       kind: 'metal-acid',

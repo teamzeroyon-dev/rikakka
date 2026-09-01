@@ -16,7 +16,7 @@ export function DiagnosisClient() {
           <Link href="/bag" className="flex size-12 items-center justify-center rounded-lg border border-border" aria-label="もどる">
             <ArrowLeft />
           </Link>
-          <h1 className="text-xl font-bold">🔮 きょうみ診断</h1>
+          <h1 className="text-xl font-bold"> きょうみ診断</h1>
         </header>
 
         {result.totalCleared === 0 ? (
@@ -26,7 +26,6 @@ export function DiagnosisClient() {
         ) : (
           <>
             <section className="flex flex-col items-center gap-3 rounded-3xl border border-primary bg-primary/10 p-6 text-center">
-              <span className="text-5xl">{top?.emoji}</span>
               <p className="text-sm text-muted-foreground">きみは...</p>
               <h2 className="text-2xl font-black text-primary">{top?.job}</h2>
               <p className="text-sm leading-6">{top?.jobDesc}</p>
@@ -40,7 +39,7 @@ export function DiagnosisClient() {
                 <div key={r.archetype} className="flex flex-col gap-1">
                   <div className="flex items-center justify-between text-sm font-bold">
                     <span>
-                      {r.emoji} {r.label}
+                      {r.label}
                     </span>
                     <span>
                       {r.count}問 ({r.percent}%)

@@ -12,7 +12,7 @@ type Board = {
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
-const MEDAL = ['🥇', '🥈', '🥉']
+const MEDAL = ['', '', '']
 
 export function RankingClient() {
   const { data } = useSWR<Board>('/api/ranking', fetcher, { refreshInterval: 15_000 })
@@ -40,9 +40,9 @@ export function RankingClient() {
               {data.lastWeekWinners.map((w) => (
                 <li key={w.userId} className="flex items-center justify-between text-sm">
                   <span>
-                    {MEDAL[w.rank - 1] ?? '🏅'} {w.name}
+                    {MEDAL[w.rank - 1] ?? ''} {w.name}
                   </span>
-                  <span className="font-bold text-primary">+{w.coinsAwarded}✨</span>
+                  <span className="font-bold text-primary">+{w.coinsAwarded}</span>
                 </li>
               ))}
             </ul>
