@@ -7,11 +7,9 @@ import {
   WORLD_W,
   getMapRegion,
   getNodesForRegion,
-  getNodeIndex,
-  getPrevNode,
+  getPrevNodeInRegion,
   getSugorokuNode,
   mapRegions,
-  sugorokuNodes,
   themeColors,
   type MapRegion,
 } from '@/lib/world'
@@ -28,8 +26,9 @@ import {
 import { MapIsland } from '@/components/MapIsland'
 import { MapSugoroku, getNodeStatus } from '@/components/MapSugoroku'
 import { MapControls } from '@/components/MapControls'
-import { defaultSave, readSave, type Save } from '@/lib/progress'
+import { useSave } from '@/lib/progress'
 import { getProblem } from '@/lib/problems'
+import { getChemStage } from '@/lib/quizProblems'
 
 type Toast = { id: number; message: string }
 type Pointer = { x: number; y: number }
@@ -54,12 +53,11 @@ export function WorldMap() {
   const [vb, setVb] = useState<VBState>({ x: 0, y: 0, w: WORLD_W })
   const vbRef = useRef(vb)
   const initializedRef = useRef(false)
-  const [save, setSave] = useState<Save>(defaultSave)
+  const { save } = useSave()
   const [toast, setToast] = useState<Toast | null>(null)
   const [lockedNode, setLockedNode] = useState<string | null>(null)
   const [highlightedNodeId, setHighlightedNodeId] = useState<string | null>(null)
 
-  useEffect(() => setSave(readSave()), [])
   useEffect(() => {
     vbRef.current = vb
   }, [vb])
@@ -142,11 +140,19 @@ export function WorldMap() {
 
   const handleNodeTap = useCallback(
     (nodeId: string) => {
-      const index = getNodeIndex(nodeId)
-      const node = sugorokuNodes[index]
-      const status = getNodeStatus(node, index, save)
+      const node = getSugorokuNode(nodeId)
+      if (!node) return
+      const status = getNodeStatus(node, getPrevNodeInRegion(nodeId), save)
       if (status === 'locked') {
         setLockedNode(nodeId)
+        return
+      }
+      if (node.regionId === 'kagaku') {
+        if (!getChemStage(nodeId)) {
+          showToast('じゅんびちゅう')
+          return
+        }
+        router.push(`/chem/${nodeId}`)
         return
       }
       if (!getProblem(nodeId)) {
@@ -317,7 +323,7 @@ export function WorldMap() {
         }
       : null
   const lockedNodeData = lockedNode ? getSugorokuNode(lockedNode) : null
-  const prevOfLocked = lockedNode ? getPrevNode(lockedNode) : null
+  const prevOfLocked = lockedNode ? getPrevNodeInRegion(lockedNode) : null
 
   return (
     <div ref={containerRef} className="relative h-[100dvh] w-full touch-none overflow-hidden overscroll-none bg-[#CFE6EE]">

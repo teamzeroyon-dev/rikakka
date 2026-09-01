@@ -20,13 +20,14 @@ export type MapRegion = {
   polygon: Point[]
 }
 
-export type ThemeId = 'chikara' | 'hikari' | 'jishaku' | 'denki'
+export type ThemeId = 'chikara' | 'hikari' | 'jishaku' | 'denki' | 'kagaku'
 
 export const themeColors: Record<ThemeId, string> = {
   chikara: '#FF9040',
   hikari: '#E8B33A',
   jishaku: '#9B72CF',
   denki: '#4E8FC5',
+  kagaku: '#3AA6A0',
 }
 
 export type SugorokuNode = {
@@ -95,7 +96,7 @@ export const mapRegions: MapRegion[] = [
     name: '化学海岸',
     labelPos: { x: 806, y: 452 },
     color: '#4E8FC5',
-    status: 'comingSoon',
+    status: 'open',
     polygon: [
       { x: 615, y: 590 }, { x: 600, y: 337 }, { x: 740, y: 345 }, { x: 860, y: 380 },
       { x: 945, y: 440 }, { x: 972, y: 545 },
@@ -130,6 +131,8 @@ export const mapRegions: MapRegion[] = [
 export const sugorokuNodes: SugorokuNode[] = [
   { id: 'rubber-01', label: 'ゴムの力 ①', grade: 3, theme: 'chikara', regionId: 'butsuri', x: 700, y: 630 },
   { id: 'rubber-02', label: 'ゴムの力 ②', grade: 3, theme: 'chikara', regionId: 'butsuri', x: 775, y: 622 },
+  { id: 'rubber-03', label: 'ゴムの力 ③', grade: 3, theme: 'chikara', regionId: 'butsuri', x: 655, y: 600 },
+  { id: 'rubber-04', label: 'ゴムの力 ④', grade: 3, theme: 'chikara', regionId: 'butsuri', x: 650, y: 668 },
   { id: 'wind-01', label: 'かぜの力 ①', grade: 3, theme: 'chikara', regionId: 'butsuri', x: 850, y: 626 },
   { id: 'light-01', label: 'ひかり ①', grade: 3, theme: 'hikari', regionId: 'butsuri', x: 920, y: 642 },
   { id: 'mirror-01', label: 'かがみ ①', grade: 3, theme: 'hikari', regionId: 'butsuri', x: 918, y: 694 },
@@ -145,6 +148,24 @@ export const sugorokuNodes: SugorokuNode[] = [
   { id: 'lever-02', label: 'てこ ②', grade: 6, theme: 'chikara', regionId: 'butsuri', x: 716, y: 818 },
   { id: 'lever-03', label: 'てこ ③', grade: 6, theme: 'chikara', regionId: 'butsuri', x: 722, y: 852 },
   { id: 'elec-use-01', label: '電気の りよう', grade: 6, theme: 'denki', regionId: 'butsuri', x: 790, y: 848 },
+  { id: 'chem-01', label: 'ものの重さ', grade: 3, theme: 'kagaku', regionId: 'kagaku', x: 650, y: 565 },
+  { id: 'chem-02', label: '形と重さ', grade: 3, theme: 'kagaku', regionId: 'kagaku', x: 705, y: 565 },
+  { id: 'chem-03', label: '体積と重さ', grade: 3, theme: 'kagaku', regionId: 'kagaku', x: 760, y: 558 },
+  { id: 'chem-04', label: '空気って重い？', grade: 4, theme: 'kagaku', regionId: 'kagaku', x: 812, y: 542 },
+  { id: 'chem-05', label: '空気の性質', grade: 4, theme: 'kagaku', regionId: 'kagaku', x: 858, y: 518 },
+  { id: 'chem-06', label: '空気は縮む！', grade: 4, theme: 'kagaku', regionId: 'kagaku', x: 900, y: 488 },
+  { id: 'chem-07', label: '水は縮む？', grade: 4, theme: 'kagaku', regionId: 'kagaku', x: 930, y: 452 },
+  { id: 'chem-08', label: 'あたためると', grade: 4, theme: 'kagaku', regionId: 'kagaku', x: 895, y: 425 },
+  { id: 'chem-09', label: '水の三態変化', grade: 4, theme: 'kagaku', regionId: 'kagaku', x: 850, y: 405 },
+  { id: 'chem-10', label: '水に入れよう', grade: 5, theme: 'kagaku', regionId: 'kagaku', x: 802, y: 392 },
+  { id: 'chem-11', label: 'とけたものは', grade: 5, theme: 'kagaku', regionId: 'kagaku', x: 752, y: 385 },
+  { id: 'chem-12', label: 'とけても重さ', grade: 5, theme: 'kagaku', regionId: 'kagaku', x: 700, y: 380 },
+  { id: 'chem-13', label: 'どこまでとける', grade: 5, theme: 'kagaku', regionId: 'kagaku', x: 655, y: 392 },
+  { id: 'chem-14', label: '温度で変わる？', grade: 5, theme: 'kagaku', regionId: 'kagaku', x: 680, y: 435 },
+  { id: 'chem-15', label: 'ものが燃える！', grade: 6, theme: 'kagaku', regionId: 'kagaku', x: 725, y: 455 },
+  { id: 'chem-16', label: '水溶液ってなんだ', grade: 6, theme: 'kagaku', regionId: 'kagaku', x: 770, y: 468 },
+  { id: 'chem-17', label: '酸性？中性？', grade: 6, theme: 'kagaku', regionId: 'kagaku', x: 815, y: 468 },
+  { id: 'chem-18', label: '水溶液と金属', grade: 6, theme: 'kagaku', regionId: 'kagaku', x: 858, y: 465 },
 ]
 
 export const getIsland = (id: string) => islands.find((i) => i.id === id)
@@ -154,3 +175,10 @@ export const getNodesForRegion = (regionId: string) => sugorokuNodes.filter((n) 
 export const getSugorokuNode = (id: string) => sugorokuNodes.find((n) => n.id === id)
 export const getNodeIndex = (id: string) => sugorokuNodes.findIndex((n) => n.id === id)
 export const getPrevNode = (id: string) => sugorokuNodes[getNodeIndex(id) - 1] ?? null
+export const getPrevNodeInRegion = (id: string): SugorokuNode | null => {
+  const node = getSugorokuNode(id)
+  if (!node) return null
+  const regionNodes = getNodesForRegion(node.regionId)
+  const idx = regionNodes.findIndex((n) => n.id === id)
+  return regionNodes[idx - 1] ?? null
+}
