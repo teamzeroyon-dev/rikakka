@@ -30,7 +30,7 @@ export function RankingClient() {
         </header>
 
         <p className="rounded-2xl bg-card p-4 text-sm leading-6 text-muted-foreground shadow-sm">
-          アプリを つかった 時間の ランキングだよ。毎週 月曜日に 上位3人に コインが プレゼントされるよ！
+          アプリを つかった 時間の ランキングだよ。毎週 日曜日の 午後6時に 更新されて、上位3人に コインが プレゼントされるよ！
         </p>
 
         {data?.lastWeekWinners && data.lastWeekWinners.length > 0 && (
