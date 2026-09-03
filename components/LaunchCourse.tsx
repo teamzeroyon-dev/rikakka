@@ -124,7 +124,7 @@ export function LaunchCourse({
         setLaunching((l) => ({ ...l, [id]: false }))
         setRestDistance((r) => ({ ...r, [id]: distance }))
         setRecords((r) => {
-          const hit = distance >= goals[id].minCm
+          const hit = Math.round(distance) === Math.round(goals[id].minCm)
           const updated = { ...r, [id]: [...(r[id] ?? []), { stretch, distance, hit }] }
           const allDone = lanes.every((l) => (updated[l.id] ?? []).some((x) => x.hit))
           if (allDone) {
@@ -144,7 +144,7 @@ export function LaunchCourse({
   const all = lanes.flatMap((l) => records[l.id] ?? [])
   const currentRest = restDistance[selected] ?? null
   const currentGoal = goals?.[selected]
-  const currentHit = currentRest != null && currentGoal ? currentRest >= currentGoal.minCm : null
+  const currentHit = currentRest != null && currentGoal ? Math.round(currentRest) === Math.round(currentGoal.minCm) : null
 
   if (!goals) {
     return (
@@ -197,7 +197,7 @@ export function LaunchCourse({
               {/* goal line */}
               <line x1={goalX} y1={y + 8} x2={goalX} y2={y + 50} stroke="#3D8B3D" strokeWidth="2" strokeDasharray="4 3" />
               <text x={goalX} y={y + 4} textAnchor="middle" fontSize="14">
-                🏁
+                
               </text>
               <text x={goalX} y={y + 62} textAnchor="middle" fontSize="9" fontWeight="bold" fill="#3D8B3D">
                 {Math.round(goal.minCm)}cmまで
@@ -252,7 +252,7 @@ export function LaunchCourse({
               <g onPointerDown={(e) => { e.stopPropagation(); startDrag(lane.id) }}>
                 {rest != null && !isLaneLaunching && (
                   <text x={carX + 17} y={y - 8} textAnchor="middle" fontSize="14">
-                    {rest >= goal.minCm ? '🎉' : '😅'}
+                    {rest >= goal.minCm ? '' : ''}
                   </text>
                 )}
                 <rect x={carX} y={y - 1} width="34" height="22" rx="6" fill="#FF9040" />
@@ -272,7 +272,7 @@ export function LaunchCourse({
 
       {currentHit != null && (
         <p className={`rounded-xl px-4 py-2 text-center text-sm font-bold ${currentHit ? 'bg-[#5FB85F]/20 text-[#3D8B3D]' : 'bg-accent text-muted-foreground'}`}>
-          {currentHit ? '🎉 ゴールに とどいた！' : `😅 まだ ${Math.round((currentGoal?.minCm ?? 0) - (currentRest ?? 0))}cm 足りない。もっと のばそう`}
+          {currentHit ? 'ゴールに ぴったり とどいた！' : `ゴールまで あと ${Math.abs(Math.round((currentGoal?.minCm ?? 0) - (currentRest ?? 0)))}cm。長さを 調整しよう`}
         </p>
       )}
 
@@ -282,14 +282,14 @@ export function LaunchCourse({
           disabled={isLaunching || current === 0}
           className="min-h-12 flex-1 rounded-xl bg-primary px-4 font-bold text-primary-foreground disabled:opacity-50"
         >
-          🚀 はなす
+           はなす
         </button>
         <button
           onClick={() => resetLane(selected)}
           disabled={isLaunching}
           className="min-h-12 rounded-xl border border-border px-4 font-bold disabled:opacity-50"
         >
-          ↩ もどす
+          もどす
         </button>
       </div>
 

@@ -86,16 +86,17 @@ function Archery() {
   return (
     <svg viewBox="0 0 320 180" className="block w-full overflow-hidden" role="img" aria-label="弓の矢が飛んでいくアニメーション">
       <Sky />
-      <path d="M74 40 Q40 90 74 140" stroke="var(--scene-wood-dark)" strokeWidth="8" fill="none" strokeLinecap="round" />
-      <g className="animate-rws-bow-pull">
-        <line x1="74" y1="40" x2="112" y2="90" stroke="var(--scene-metal)" strokeWidth="2" />
-        <line x1="74" y1="140" x2="112" y2="90" stroke="var(--scene-metal)" strokeWidth="2" />
-        <line x1="94" y1="90" x2="140" y2="90" stroke="var(--scene-wood)" strokeWidth="4" strokeLinecap="round" />
-        <path d="M140 90 L128 84 L128 96 Z" fill="var(--scene-accent)" />
+      <g className="animate-rws-bow-cycle" style={{ transformOrigin: '86px 90px' }}>
+        <path d="M92 30 Q28 90 92 150" stroke="var(--scene-wood-dark)" strokeWidth="10" fill="none" strokeLinecap="round" />
+        <g className="animate-rws-bow-string" style={{ transformOrigin: '92px 90px' }}>
+          <path d="M92 30 L136 90 L92 150" stroke="var(--scene-metal)" strokeWidth="3" fill="none" strokeLinecap="round" />
+          <line x1="92" y1="90" x2="166" y2="90" stroke="var(--scene-wood)" strokeWidth="4" strokeLinecap="round" />
+          <path d="M166 90 L154 84 L154 96 Z" fill="var(--scene-accent)" />
+        </g>
       </g>
       <g className="animate-rws-arrow-fly">
-        <line x1="94" y1="90" x2="140" y2="90" stroke="var(--scene-wood)" strokeWidth="4" strokeLinecap="round" />
-        <path d="M140 90 L128 84 L128 96 Z" fill="var(--scene-accent)" />
+        <line x1="92" y1="90" x2="166" y2="90" stroke="var(--scene-wood)" strokeWidth="4" strokeLinecap="round" />
+        <path d="M166 90 L154 84 L154 96 Z" fill="var(--scene-accent)" />
       </g>
       <circle cx="270" cy="90" r="18" fill="none" stroke="var(--scene-accent)" strokeWidth="4" />
       <circle cx="270" cy="90" r="8" fill="var(--scene-accent)" />

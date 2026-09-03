@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import { islands, mapRegions, mathIslandCenter, type MapRegion } from '@/lib/world'
 import { lerpClamp } from '@/lib/viewbox'
 import { jaggedOutline, polygonCentroid, scalePolygon, scatterPointsInPolygon, seededRandom, smoothClosedPath } from '@/lib/mapShapes'
+import { MapDecor } from '@/components/MapDecor'
 
 const toPoints = (polygon: { x: number; y: number }[]) => polygon.map((p) => `${p.x},${p.y}`).join(' ')
 
@@ -42,47 +43,19 @@ function Tree({ x, y, s, seed }: { x: number; y: number; s: number; seed: number
   )
 }
 
-function Rock({ x, y, s, seed }: { x: number; y: number; s: number; seed: number }) {
-  const rnd = seededRandom(seed)
-  const r = s * (0.4 + rnd() * 0.3)
-  return (
-    <ellipse cx={x} cy={y} rx={r} ry={r * 0.6} fill="#B8AA95" opacity={0.75} style={{ pointerEvents: 'none' }} />
-  )
-}
-
-function HillBump({ x, y, s, seed }: { x: number; y: number; s: number; seed: number }) {
-  const rnd = seededRandom(seed)
-  const r = s * (0.7 + rnd() * 0.5)
-  return (
-    <path
-      d={`M ${x - r} ${y} Q ${x} ${y - r * 0.85} ${x + r} ${y} Z`}
-      fill="#E88A38"
-      opacity={0.28}
-      style={{ pointerEvents: 'none' }}
-    />
-  )
-}
-
 // --- Per-region decoration sets ---------------------------------------------
 
 function useRegionDecorations() {
   return useMemo(() => {
     const chigaku = mapRegions.find((r) => r.id === 'chigaku')!
-    const kagaku = mapRegions.find((r) => r.id === 'kagaku')!
-    const butsuri = mapRegions.find((r) => r.id === 'butsuri')!
     const seibutsu = mapRegions.find((r) => r.id === 'seibutsu')!
 
     const mountains = scatterPointsInPolygon(chigaku.polygon, 6, 101, 36)
     const mountainContours = scatterPointsInPolygon(chigaku.polygon, 4, 202, 20)
 
-    const beachRocks = scatterPointsInPolygon(kagaku.polygon, 10, 303, 14)
-    const waveOffsets = scatterPointsInPolygon(kagaku.polygon, 5, 404, 30)
-
-    const hillBumps = scatterPointsInPolygon(butsuri.polygon, 5, 505, 40)
-
     const trees = scatterPointsInPolygon(seibutsu.polygon, 11, 606, 18)
 
-    return { mountains, mountainContours, beachRocks, waveOffsets, hillBumps, trees }
+    return { mountains, mountainContours, trees }
   }, [])
 }
 
@@ -105,26 +78,8 @@ function RegionTerrain({ region, decor }: { region: MapRegion; decor: ReturnType
       </>
     )
   }
-  if (region.id === 'kagaku') {
-    return (
-      <>
-        {decor.waveOffsets.map((p, i) => (
-          <path
-            key={`w-${i}`}
-            d={`M ${p.x - 26} ${p.y} Q ${p.x - 13} ${p.y - 8} ${p.x} ${p.y} Q ${p.x + 13} ${p.y + 8} ${p.x + 26} ${p.y}`}
-            fill="none"
-            stroke="#FFFFFF"
-            strokeWidth={2.5}
-            opacity={0.4}
-            style={{ pointerEvents: 'none' }}
-          />
-        ))}
-        {decor.beachRocks.map((p, i) => <Rock key={i} x={p.x} y={p.y} s={16} seed={303 + i * 5} />)}
-      </>
-    )
-  }
-  if (region.id === 'butsuri') {
-    return <>{decor.hillBumps.map((p, i) => <HillBump key={i} x={p.x} y={p.y} s={46} seed={505 + i * 9} />)}</>
+  if (region.id === 'kagaku' || region.id === 'butsuri') {
+    return <MapDecor region={region} />
   }
   if (region.id === 'seibutsu') {
     return <>{decor.trees.map((p, i) => <Tree key={i} x={p.x} y={p.y} s={30} seed={606 + i * 11} />)}</>

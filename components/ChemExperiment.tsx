@@ -325,7 +325,7 @@ function HeatCoolExperiment({ mode, itemLabel, onDone }: { mode: 'heat-water' | 
   const dragging = useRef(false)
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null)
 
-  const toolLabel = mode === 'heat-water' || mode === 'expand-metal' || mode === 'heat-air' ? '🔥' : '🧊'
+  const toolLabel = mode === 'heat-water' || mode === 'expand-metal' || mode === 'heat-air' ? 'あたためる' : '冷やす'
   const isWater = mode === 'heat-water' || mode === 'freeze-water'
   const isAir = mode === 'heat-air'
 
@@ -395,7 +395,7 @@ function HeatCoolExperiment({ mode, itemLabel, onDone }: { mode: 'heat-water' | 
         )}
         {!applied && (
           <g transform={`translate(${pos?.x ?? 60},${pos?.y ?? 50})`} onPointerDown={down} className="cursor-grab active:cursor-grabbing">
-            <circle r={20} fill={toolLabel === '🔥' ? 'var(--chem-flame)' : 'var(--chem-ice)'} stroke="white" strokeWidth={3} />
+            <circle r={20} fill={mode === 'heat-water' || mode === 'expand-metal' || mode === 'heat-air' ? 'var(--chem-flame)' : 'var(--chem-ice)'} stroke="white" strokeWidth={3} />
             <text y={6} textAnchor="middle" fontSize={18}>{toolLabel}</text>
           </g>
         )}
@@ -438,11 +438,11 @@ function SweepExperiment({ mode, targets, onDone }: { mode: 'evaporate' | 'magne
     if (hit.size >= targets.length) setTimeout(onDone, 500)
   }
 
-  const toolEmoji = mode === 'evaporate' ? '☀️' : '🧲'
+  const toolLabel = mode === 'evaporate' ? '太陽' : '磁石'
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <Instruction text={hit.size >= targets.length ? 'ぜんぶ たしかめられたね' : `${toolEmoji}を左右にドラッグして、それぞれに近づけよう`} />
+      <Instruction text={hit.size >= targets.length ? 'ぜんぶ たしかめられたね' : `${toolLabel}を左右にドラッグして、それぞれに近づけよう`} />
       <svg ref={svgRef} viewBox={VB} className="w-full max-w-[380px] select-none" style={{ touchAction: 'none' }} onPointerMove={move} onPointerUp={up} onPointerLeave={up}>
         {targets.map((t, i) => {
           const cx = 50 + i * spacing
@@ -461,7 +461,7 @@ function SweepExperiment({ mode, targets, onDone }: { mode: 'evaporate' | 'magne
         })}
         <g transform={`translate(${toolX},50)`} onPointerDown={down} className="cursor-grab active:cursor-grabbing">
           <circle r={18} fill="var(--chem-glow)" stroke="white" strokeWidth={3} />
-          <text y={6} textAnchor="middle" fontSize={16}>{toolEmoji}</text>
+          <text y={6} textAnchor="middle" fontSize={16}>{toolLabel}</text>
         </g>
       </svg>
     </div>
@@ -496,7 +496,7 @@ function CondenseExperiment({ onDone }: { onDone: () => void }) {
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <Instruction text={dropped ? 'コップの外側に水てきがついたね' : '🧊の氷を、コップの中までドラッグしよう'} />
+      <Instruction text={dropped ? 'コップの外側に水てきがついたね' : 'の氷を、コップの中までドラッグしよう'} />
       <svg ref={svgRef} viewBox={VB} className="w-full max-w-[380px] select-none" style={{ touchAction: 'none' }} onPointerMove={move} onPointerUp={up} onPointerLeave={up}>
         <path d="M130 90 L145 190 Q145 198 153 198 L187 198 Q195 198 195 190 L210 90 Z" fill="none" stroke="var(--chem-water-dark)" strokeWidth={4} />
         {dropped && (
@@ -510,7 +510,7 @@ function CondenseExperiment({ onDone }: { onDone: () => void }) {
         {!dropped && (
           <g transform={`translate(${pos?.x ?? 260},${pos?.y ?? 60})`} onPointerDown={down} className="cursor-grab active:cursor-grabbing">
             <rect x={-16} y={-16} width={32} height={32} rx={6} fill="var(--chem-ice)" stroke="white" strokeWidth={3} />
-            <text y={5} textAnchor="middle" fontSize={16}>🧊</text>
+            <text y={5} textAnchor="middle" fontSize={16}></text>
           </g>
         )}
       </svg>
@@ -592,7 +592,7 @@ function CircuitExperiment({ materials, onDone }: { materials: { label: string; 
       <svg viewBox={VB} className="w-full max-w-[380px] select-none">
         <rect x={90} y={70} width={160} height={90} rx={12} fill="none" stroke="var(--chem-metal)" strokeWidth={4} />
         <circle cx={170} cy={70} r={16} fill={lit ? 'var(--chem-glow)' : 'var(--chem-salt)'} stroke="var(--chem-metal)" strokeWidth={3} className={lit ? 'animate-chem-glow-pulse' : ''} />
-        <text x={170} y={40} textAnchor="middle" fontSize={22}>💡</text>
+        <text x={170} y={40} textAnchor="middle" fontSize={22}></text>
         <rect x={95} y={150} width={30} height={16} rx={3} fill="var(--chem-metal)" />
         <rect x={90} y={100} width={12} height={30} fill="none" />
         <text x={170} y={165} textAnchor="middle" fontSize={10} fontWeight={900} fill="var(--foreground)">
@@ -687,7 +687,7 @@ function EvaporateSaltExperiment({ onDone }: { onDone: () => void }) {
   }
   return (
     <div className="flex flex-col items-center gap-3">
-      <Instruction text={done ? '水が蒸発して、とけていた食塩が出てきたね' : '☀️を食塩水の入ったお皿までドラッグしよう'} />
+      <Instruction text={done ? '水が蒸発して、とけていた食塩が出てきたね' : 'を食塩水の入ったお皿までドラッグしよう'} />
       <svg ref={svgRef} viewBox={VB} className="w-full max-w-[380px] select-none" style={{ touchAction: 'none' }} onPointerMove={move} onPointerUp={up} onPointerLeave={up}>
         {/* dish */}
         <path d="M120 150 Q120 172 170 172 Q220 172 220 150 Z" fill="none" stroke="var(--chem-metal)" strokeWidth={4} />
@@ -699,7 +699,7 @@ function EvaporateSaltExperiment({ onDone }: { onDone: () => void }) {
         {!done && (
           <g transform={`translate(${pos?.x ?? 70},${pos?.y ?? 55})`} onPointerDown={down} className="cursor-grab active:cursor-grabbing">
             <circle r={20} fill="var(--chem-glow)" stroke="white" strokeWidth={3} />
-            <text y={7} textAnchor="middle" fontSize={20}>☀️</text>
+            <text y={7} textAnchor="middle" fontSize={20}></text>
           </g>
         )}
       </svg>
