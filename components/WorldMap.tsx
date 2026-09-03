@@ -190,10 +190,6 @@ export function WorldMap() {
       const hit = el?.closest('[data-hit]')
       if (!hit) return
       const kind = hit.getAttribute('data-hit')
-      if (kind === 'math-island') {
-        showToast('さんすう島は じゅんびちゅう')
-        return
-      }
       if (kind === 'region') {
         const regionId = hit.getAttribute('data-region-id')!
         const region = getMapRegion(regionId)

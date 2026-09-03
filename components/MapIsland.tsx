@@ -1,6 +1,6 @@
 'use client'
 import { useMemo } from 'react'
-import { islands, mapRegions, mathIslandCenter, type MapRegion } from '@/lib/world'
+import { islands, mapRegions, type MapRegion } from '@/lib/world'
 import { lerpClamp } from '@/lib/viewbox'
 import { jaggedOutline, polygonCentroid, scalePolygon, scatterPointsInPolygon, seededRandom, smoothClosedPath } from '@/lib/mapShapes'
 import { MapDecor } from '@/components/MapDecor'
@@ -126,11 +126,6 @@ export function MapIsland({ k }: { k: number }) {
                 <RegionTerrain region={region} decor={decor} />
               </g>
             ))}
-          {island.status === 'comingSoon' && (
-            <text x={mathIslandCenter.x} y={mathIslandCenter.y} textAnchor="middle" fontSize={140} fontWeight={900} fill="#8CA6A2" opacity={0.6} data-hit="math-island" style={{ cursor: 'pointer' }}>
-              ?
-            </text>
-          )}
           <text
             x={island.labelPos.x}
             y={island.labelPos.y}
@@ -141,14 +136,11 @@ export function MapIsland({ k }: { k: number }) {
             stroke="#FFFFFF"
             strokeWidth={6}
             paintOrder="stroke"
-            opacity={island.status === 'comingSoon' ? 1 : islandLabelOpacity}
+            opacity={islandLabelOpacity}
             style={{ pointerEvents: 'none' }}
           >
             {island.name}
           </text>
-          {island.status === 'comingSoon' && (
-            <polygon points={toPoints(island.outline)} fill="transparent" data-hit="math-island" style={{ cursor: 'pointer' }} />
-          )}
         </g>
       ))}
       {mapRegions.map((region) => (
