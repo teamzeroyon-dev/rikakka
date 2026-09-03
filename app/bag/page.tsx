@@ -1,7 +1,16 @@
+import { Suspense } from 'react'
 import { requireUser } from '@/lib/require-user'
 import { BagClient } from '@/components/BagClient'
 
-export default async function BagPage() {
+async function AuthedBag() {
   await requireUser()
   return <BagClient />
+}
+
+export default function BagPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[100dvh] w-full bg-background" />}>
+      <AuthedBag />
+    </Suspense>
+  )
 }
