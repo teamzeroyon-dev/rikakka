@@ -1,4 +1,14 @@
-export type PartType = 'faceShape' | 'bodyType' | 'eyes' | 'eyebrows' | 'eyelashes' | 'nose' | 'mouth' | 'clothes'
+export type PartType =
+  | 'hair'
+  | 'hairColor'
+  | 'faceShape'
+  | 'bodyType'
+  | 'eyes'
+  | 'eyebrows'
+  | 'eyelashes'
+  | 'nose'
+  | 'mouth'
+  | 'clothes'
 
 export type PartVariant = {
   id: string
@@ -7,9 +17,23 @@ export type PartVariant = {
   price: number // 0 = free / owned from the start
 }
 
-export const PART_TYPES: PartType[] = ['faceShape', 'bodyType', 'eyes', 'eyebrows', 'eyelashes', 'nose', 'mouth', 'clothes']
+// Hair leads the list: it is the part that makes an avatar recognisable.
+export const PART_TYPES: PartType[] = [
+  'hair',
+  'hairColor',
+  'faceShape',
+  'eyes',
+  'eyebrows',
+  'eyelashes',
+  'nose',
+  'mouth',
+  'bodyType',
+  'clothes',
+]
 
 export const PART_TYPE_LABELS: Record<PartType, string> = {
+  hair: 'かみがた',
+  hairColor: 'かみの いろ',
   faceShape: 'かおの かたち',
   bodyType: 'からだ',
   eyes: 'め',
@@ -44,6 +68,8 @@ export function isFree(partType: PartType, variantId: string): boolean {
 }
 
 export const DEFAULT_EQUIPPED: Record<PartType, string> = {
+  hair: 'hair-1',
+  hairColor: 'hairColor-1',
   faceShape: 'faceShape-1',
   bodyType: 'bodyType-1',
   eyes: 'eyes-1',

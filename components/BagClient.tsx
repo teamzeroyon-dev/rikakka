@@ -7,7 +7,7 @@ export function BagClient() {
   const { save } = useSave()
   const cleared = problems.filter((p) => save.cleared[p.id])
   return (
-    <main className="min-h-screen bg-background px-5 py-6">
+    <main className="min-h-[var(--stage-h)] bg-background px-5 py-6">
       <div className="mx-auto flex max-w-xl flex-col gap-6">
         <div className="flex items-center justify-between">
           <Link href="/" className="text-sm font-bold">

@@ -51,7 +51,11 @@ export default function RootLayout({
     <html lang="ja" className={`light bg-background ${notoSansJP.variable}`}>
       <body className="antialiased">
         <UsageTracker />
-        {children}
+        <div className="game-shell">
+          <div className="game-stage">
+            <div className="game-viewport">{children}</div>
+          </div>
+        </div>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

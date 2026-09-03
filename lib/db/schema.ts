@@ -30,8 +30,10 @@ export const avatarOwned = pgTable('avatar_owned', {
 
 export const avatarEquipped = pgTable('avatar_equipped', {
   userId: text('userId').primaryKey(),
-  faceShape: text('faceShape').notNull().default('face-1'),
-  bodyType: text('bodyType').notNull().default('body-1'),
+  hair: text('hair').notNull().default('hair-1'),
+  hairColor: text('hairColor').notNull().default('hairColor-1'),
+  faceShape: text('faceShape').notNull().default('faceShape-1'),
+  bodyType: text('bodyType').notNull().default('bodyType-1'),
   eyes: text('eyes').notNull().default('eyes-1'),
   eyebrows: text('eyebrows').notNull().default('eyebrows-1'),
   eyelashes: text('eyelashes').notNull().default('eyelashes-1'),

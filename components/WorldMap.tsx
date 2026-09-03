@@ -29,6 +29,7 @@ import { MapControls } from '@/components/MapControls'
 import { useSave } from '@/lib/progress'
 import { getProblem } from '@/lib/problems'
 import { getChemStage } from '@/lib/quizProblems'
+import { getScienceStage } from '@/lib/scienceStages'
 
 type Toast = { id: number; message: string }
 type Pointer = { x: number; y: number }
@@ -153,6 +154,14 @@ export function WorldMap() {
           return
         }
         router.push(`/chem/${nodeId}`)
+        return
+      }
+      if (node.regionId === 'chigaku' || node.regionId === 'seibutsu') {
+        if (!getScienceStage(nodeId)) {
+          showToast('じゅんびちゅう')
+          return
+        }
+        router.push(`/s/${nodeId}`)
         return
       }
       if (!getProblem(nodeId)) {
@@ -322,7 +331,7 @@ export function WorldMap() {
   const prevOfLocked = lockedNode ? getPrevNodeInRegion(lockedNode) : null
 
   return (
-    <div ref={containerRef} className="relative h-[100dvh] w-full touch-none overflow-hidden overscroll-none bg-[#CFE6EE]">
+    <div ref={containerRef} className="relative h-[var(--stage-h)] w-full touch-none overflow-hidden overscroll-none bg-[#CFE6EE]">
       <svg
         ref={svgRef}
         className="absolute inset-0 h-full w-full"

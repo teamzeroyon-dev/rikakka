@@ -9,7 +9,7 @@ async function AuthedRanking() {
 
 export default function RankingPage() {
   return (
-    <Suspense fallback={<div className="min-h-[100dvh] w-full bg-background" />}>
+    <Suspense fallback={<div className="min-h-[var(--stage-h)] w-full bg-background" />}>
       <AuthedRanking />
     </Suspense>
   )

@@ -3,6 +3,8 @@ import useSWR, { mutate as globalMutate } from 'swr'
 
 export type ClearRecord = { count: number; lastClearedAt: number }
 export type AvatarEquipped = {
+  hair: string
+  hairColor: string
   faceShape: string
   bodyType: string
   eyes: string

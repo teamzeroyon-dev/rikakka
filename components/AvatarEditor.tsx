@@ -1,15 +1,19 @@
 'use client'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import { ArrowLeft, Lock, Sparkles, Check } from 'lucide-react'
 import { useSave, refreshSave } from '@/lib/progress'
 import { AVATAR_CATALOG, PART_TYPES, PART_TYPE_LABELS, DEFAULT_EQUIPPED, type PartType } from '@/lib/avatarParts'
-import { AvatarPreview, type EquippedParts } from '@/components/AvatarPreview'
+import { AvatarPreview, HairColorSwatch, type EquippedParts } from '@/components/AvatarPreview'
 import { purchasePart, equipPart } from '@/app/actions/avatar'
 
 export function AvatarEditor() {
   const { save } = useSave()
-  const [tab, setTab] = useState<PartType>('faceShape')
+  // Set by the sign-up redirect: there is no map to go 'back' to yet, so the
+  // screen reads as the next onboarding step and exits forward instead.
+  const isNew = useSearchParams().get('new') === '1'
+  const [tab, setTab] = useState<PartType>('hair')
   const [isPending, startTransition] = useTransition()
   const [message, setMessage] = useState<string | null>(null)
   const [pendingId, setPendingId] = useState<string | null>(null)
@@ -45,12 +49,16 @@ export function AvatarEditor() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-5 py-6">
+    <main className="min-h-[var(--stage-h)] bg-background px-5 py-6">
       <div className="mx-auto flex max-w-xl flex-col gap-6">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-1 text-sm font-bold" aria-label="もどる">
-            <ArrowLeft className="size-4" /> もどる
-          </Link>
+          {isNew ? (
+            <span className="text-sm font-bold text-[#8a8478]">すきな すがたを えらんでね</span>
+          ) : (
+            <Link href="/" className="flex items-center gap-1 text-sm font-bold" aria-label="もどる">
+              <ArrowLeft className="size-4" /> もどる
+            </Link>
+          )}
           <span className="flex items-center gap-1 rounded-full border-2 border-[#0e4b69] bg-[#f7c94b] px-3 py-1 text-sm font-black text-[#3d3a38] shadow-[0_3px_0_#174d70]">
             <Sparkles className="size-4" /> {save.points}
           </span>
@@ -94,7 +102,11 @@ export function AvatarEditor() {
                   isEquipped ? 'border-[#0e4b69] bg-[#fdf9ef]' : 'border-border bg-card'
                 } disabled:opacity-60`}
               >
-                <AvatarPreview parts={previewParts} size={56} className="pointer-events-none" />
+                {tab === 'hairColor' ? (
+                  <HairColorSwatch variantId={variant.id} size={52} />
+                ) : (
+                  <AvatarPreview parts={previewParts} size={56} className="pointer-events-none" />
+                )}
                 {isEquipped && (
                   <span className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-[#0e4b69] text-white">
                     <Check className="size-3" />
@@ -110,6 +122,15 @@ export function AvatarEditor() {
             )
           })}
         </section>
+
+        {isNew && (
+          <Link
+            href="/"
+            className="flex min-h-14 items-center justify-center rounded-2xl border-2 border-[#0e4b69] bg-[#f7c94b] text-lg font-black text-[#3d3a38] shadow-[0_4px_0_#174d70]"
+          >
+            これで はじめる
+          </Link>
+        )}
       </div>
     </main>
   )

@@ -8,6 +8,8 @@ import { getVariant, isFree, type PartType } from '@/lib/avatarParts'
 import { revalidatePath } from 'next/cache'
 
 const COLUMN_BY_PART: Record<PartType, keyof typeof avatarEquipped.$inferInsert> = {
+  hair: 'hair',
+  hairColor: 'hairColor',
   faceShape: 'faceShape',
   bodyType: 'bodyType',
   eyes: 'eyes',

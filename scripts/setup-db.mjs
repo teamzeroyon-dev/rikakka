@@ -14,7 +14,8 @@ const statements = [
     id serial PRIMARY KEY,
     "userId" text NOT NULL,
     "problemId" text NOT NULL,
-    "clearedAt" timestamptz NOT NULL DEFAULT now(),
+    count integer NOT NULL DEFAULT 1,
+    "lastClearedAt" timestamptz NOT NULL DEFAULT now(),
     UNIQUE ("userId", "problemId")
   )`,
   `CREATE TABLE IF NOT EXISTS avatar_owned (
@@ -27,8 +28,10 @@ const statements = [
   )`,
   `CREATE TABLE IF NOT EXISTS avatar_equipped (
     "userId" text PRIMARY KEY,
-    "faceShape" text NOT NULL DEFAULT 'face-1',
-    "bodyType" text NOT NULL DEFAULT 'body-1',
+    hair text NOT NULL DEFAULT 'hair-1',
+    "hairColor" text NOT NULL DEFAULT 'hairColor-1',
+    "faceShape" text NOT NULL DEFAULT 'faceShape-1',
+    "bodyType" text NOT NULL DEFAULT 'bodyType-1',
     eyes text NOT NULL DEFAULT 'eyes-1',
     eyebrows text NOT NULL DEFAULT 'eyebrows-1',
     eyelashes text NOT NULL DEFAULT 'eyelashes-1',
@@ -53,6 +56,19 @@ const statements = [
     "awardedAt" timestamptz NOT NULL DEFAULT now(),
     UNIQUE ("weekStart", "userId")
   )`,
+  // The original setup script created problem_clears with a "clearedAt" column,
+  // but the app's schema tracks "count" + "lastClearedAt". Bring older databases
+  // (and any created by the old CREATE above) into line.
+  `ALTER TABLE problem_clears ADD COLUMN IF NOT EXISTS count integer NOT NULL DEFAULT 1`,
+  `ALTER TABLE problem_clears ADD COLUMN IF NOT EXISTS "lastClearedAt" timestamptz NOT NULL DEFAULT now()`,
+  // Existing databases predate the hair parts, and shipped placeholder defaults
+  // for faceShape/bodyType that did not match any real variant id.
+  `ALTER TABLE avatar_equipped ADD COLUMN IF NOT EXISTS hair text NOT NULL DEFAULT 'hair-1'`,
+  `ALTER TABLE avatar_equipped ADD COLUMN IF NOT EXISTS "hairColor" text NOT NULL DEFAULT 'hairColor-1'`,
+  `ALTER TABLE avatar_equipped ALTER COLUMN "faceShape" SET DEFAULT 'faceShape-1'`,
+  `ALTER TABLE avatar_equipped ALTER COLUMN "bodyType" SET DEFAULT 'bodyType-1'`,
+  `UPDATE avatar_equipped SET "faceShape" = 'faceShape-1' WHERE "faceShape" = 'face-1'`,
+  `UPDATE avatar_equipped SET "bodyType" = 'bodyType-1' WHERE "bodyType" = 'body-1'`,
 ]
 
 for (const [i, sql] of statements.entries()) {

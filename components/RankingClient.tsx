@@ -18,7 +18,7 @@ export function RankingClient() {
   const { data } = useSWR<Board>('/api/ranking', fetcher, { refreshInterval: 15_000 })
 
   return (
-    <main className="min-h-screen bg-background px-5 py-6 text-foreground">
+    <main className="min-h-[var(--stage-h)] bg-background px-5 py-6 text-foreground">
       <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
         <header className="flex items-center gap-3">
           <Link href="/" className="flex size-12 items-center justify-center rounded-lg border border-border" aria-label="もどる">

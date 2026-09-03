@@ -15,7 +15,7 @@ async function AuthedChemStage({ id }: { id: string }) {
 export default async function ChemStagePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   return (
-    <Suspense fallback={<div className="min-h-[100dvh] w-full bg-background" />}>
+    <Suspense fallback={<div className="min-h-[var(--stage-h)] w-full bg-background" />}>
       <AuthedChemStage id={id} />
     </Suspense>
   )

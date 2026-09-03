@@ -9,7 +9,7 @@ async function AuthedWorldMap() {
 
 export default function Home() {
   return (
-    <Suspense fallback={<div className="h-[100dvh] w-full bg-[#CFE6EE]" />}>
+    <Suspense fallback={<div className="h-[var(--stage-h)] w-full bg-[#CFE6EE]" />}>
       <AuthedWorldMap />
     </Suspense>
   )

@@ -27,6 +27,8 @@ export async function GET() {
     avatarOwned: owned.map((o) => `${o.partType}:${o.variantId}`),
     avatarEquipped: equipped
       ? {
+          hair: equipped.hair,
+          hairColor: equipped.hairColor,
           faceShape: equipped.faceShape,
           bodyType: equipped.bodyType,
           eyes: equipped.eyes,

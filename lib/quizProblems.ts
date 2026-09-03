@@ -25,6 +25,14 @@ export type ChemExperimentConfig =
   | { kind: 'litmus'; solutions: { label: string; nature: 'acid' | 'neutral' | 'alkali' }[] }
   | { kind: 'metal-acid'; solutions: { label: string; reacts: boolean }[] }
 
+// The three-tier ladder every stage runs on: normal -> easy -> retry. Both the
+// chem stages and the chigaku/seibutsu stages feed this shape to QuizFlow.
+export type QuizSet = {
+  normal: QuizQuestion
+  easy: QuizQuestion
+  retry: QuizQuestion
+}
+
 export type ChemStage = {
   id: string
   index: number

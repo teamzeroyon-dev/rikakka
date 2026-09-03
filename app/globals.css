@@ -189,6 +189,49 @@
   }
 }
 
+/* 16:9 game stage.
+   Phones and tablets play full-bleed, so the stage is simply the viewport.
+   On desktop the game is letterboxed into a 16:9 box; --stage-h is what the
+   screens use in place of 100dvh, so they fill the stage and not the window. */
+:root {
+  --stage-h: 100dvh;
+}
+
+.game-shell {
+  min-height: 100dvh;
+}
+
+.game-stage {
+  position: relative;
+  min-height: var(--stage-h);
+}
+
+@media (min-width: 1024px) {
+  .game-shell {
+    display: flex;
+    height: 100dvh;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #0e4b69;
+  }
+  .game-stage {
+    /* Widest 16:9 box that still fits the window. */
+    --stage-h: min(100dvh, calc(100vw * 9 / 16));
+    width: calc(var(--stage-h) * 16 / 9);
+    height: var(--stage-h);
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    box-shadow: 0 18px 50px rgb(0 0 0 / 0.35);
+  }
+  .game-viewport {
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
 @keyframes node-pulse {
   0% {
     r: 18;

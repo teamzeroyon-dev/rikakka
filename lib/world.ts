@@ -20,7 +20,7 @@ export type MapRegion = {
   polygon: Point[]
 }
 
-export type ThemeId = 'chikara' | 'hikari' | 'jishaku' | 'denki' | 'kagaku'
+export type ThemeId = 'chikara' | 'hikari' | 'jishaku' | 'denki' | 'kagaku' | 'chigaku' | 'seibutsu'
 
 export const themeColors: Record<ThemeId, string> = {
   chikara: '#FF9040',
@@ -28,6 +28,8 @@ export const themeColors: Record<ThemeId, string> = {
   jishaku: '#9B72CF',
   denki: '#4E8FC5',
   kagaku: '#3AA6A0',
+  chigaku: '#C07A3E',
+  seibutsu: '#5FB85F',
 }
 
 export type SugorokuNode = {
@@ -68,7 +70,7 @@ export const mapRegions: MapRegion[] = [
     name: '地学山',
     labelPos: { x: 432, y: 462 },
     color: '#B08050',
-    status: 'comingSoon',
+    status: 'open',
     polygon: [
       { x: 615, y: 590 }, { x: 288, y: 555 }, { x: 300, y: 470 }, { x: 360, y: 392 },
       { x: 470, y: 350 }, { x: 600, y: 337 },
@@ -104,7 +106,7 @@ export const mapRegions: MapRegion[] = [
     name: '生物森',
     labelPos: { x: 440, y: 722 },
     color: '#5FB85F',
-    status: 'comingSoon',
+    status: 'open',
     polygon: [
       { x: 615, y: 590 }, { x: 645, y: 872 }, { x: 540, y: 872 }, { x: 430, y: 848 },
       { x: 345, y: 782 }, { x: 297, y: 682 }, { x: 288, y: 555 },
@@ -155,6 +157,38 @@ export const sugorokuNodes: SugorokuNode[] = [
   { id: 'chem-16', label: '水溶液ってなんだ', grade: 6, theme: 'kagaku', regionId: 'kagaku', x: 822, y: 488 },
   { id: 'chem-17', label: '酸性？中性？', grade: 6, theme: 'kagaku', regionId: 'kagaku', x: 876, y: 488 },
   { id: 'chem-18', label: '水溶液と金属', grade: 6, theme: 'kagaku', regionId: 'kagaku', x: 930, y: 488 },
+  { id: 'chigaku-01', label: 'かげを うごかそう', grade: 3, theme: 'chigaku', regionId: 'chigaku', x: 396, y: 396 },
+  { id: 'chigaku-02', label: 'たいようを うごかそう', grade: 3, theme: 'chigaku', regionId: 'chigaku', x: 450, y: 396 },
+  { id: 'chigaku-03', label: 'ひなたを さがそう', grade: 3, theme: 'chigaku', regionId: 'chigaku', x: 504, y: 396 },
+  { id: 'chigaku-04', label: 'たいようを さがそう', grade: 3, theme: 'chigaku', regionId: 'chigaku', x: 558, y: 396 },
+  { id: 'chigaku-05', label: 'つきを うごかそう', grade: 4, theme: 'chigaku', regionId: 'chigaku', x: 558, y: 450 },
+  { id: 'chigaku-06', label: 'つきを 見つけよう', grade: 4, theme: 'chigaku', regionId: 'chigaku', x: 504, y: 450 },
+  { id: 'chigaku-07', label: 'せいざを 作ろう', grade: 4, theme: 'chigaku', regionId: 'chigaku', x: 450, y: 450 },
+  { id: 'chigaku-08', label: 'ほしの 明るさ', grade: 4, theme: 'chigaku', regionId: 'chigaku', x: 396, y: 450 },
+  { id: 'chigaku-09', label: 'くもを うごかそう', grade: 5, theme: 'chigaku', regionId: 'chigaku', x: 396, y: 504 },
+  { id: 'chigaku-10', label: 'くもと 天気', grade: 5, theme: 'chigaku', regionId: 'chigaku', x: 450, y: 504 },
+  { id: 'chigaku-11', label: '天気よほう', grade: 5, theme: 'chigaku', regionId: 'chigaku', x: 504, y: 504 },
+  { id: 'chigaku-12', label: '台風の しんろ', grade: 5, theme: 'chigaku', regionId: 'chigaku', x: 558, y: 504 },
+  { id: 'chigaku-13', label: 'ちそうを ほろう', grade: 6, theme: 'chigaku', regionId: 'chigaku', x: 558, y: 558 },
+  { id: 'chigaku-14', label: 'かせきを ほろう', grade: 6, theme: 'chigaku', regionId: 'chigaku', x: 504, y: 558 },
+  { id: 'chigaku-15', label: '火山を 作ろう', grade: 6, theme: 'chigaku', regionId: 'chigaku', x: 450, y: 558 },
+  { id: 'chigaku-16', label: '地しんの 前と 後', grade: 6, theme: 'chigaku', regionId: 'chigaku', x: 396, y: 558 },
+  { id: 'seibutsu-01', label: '植物を そだてよう', grade: 3, theme: 'seibutsu', regionId: 'seibutsu', x: 400, y: 650 },
+  { id: 'seibutsu-02', label: 'むしを 見つけよう', grade: 3, theme: 'seibutsu', regionId: 'seibutsu', x: 454, y: 650 },
+  { id: 'seibutsu-03', label: 'はっぱを くらべよう', grade: 3, theme: 'seibutsu', regionId: 'seibutsu', x: 508, y: 650 },
+  { id: 'seibutsu-04', label: 'すみかを 作ろう', grade: 3, theme: 'seibutsu', regionId: 'seibutsu', x: 562, y: 650 },
+  { id: 'seibutsu-05', label: 'きせつの 植物', grade: 4, theme: 'seibutsu', regionId: 'seibutsu', x: 562, y: 704 },
+  { id: 'seibutsu-06', label: 'きせつの 生きもの', grade: 4, theme: 'seibutsu', regionId: 'seibutsu', x: 508, y: 704 },
+  { id: 'seibutsu-07', label: 'ヘチマを そだてよう', grade: 4, theme: 'seibutsu', regionId: 'seibutsu', x: 454, y: 704 },
+  { id: 'seibutsu-08', label: 'せい長を くらべよう', grade: 4, theme: 'seibutsu', regionId: 'seibutsu', x: 400, y: 704 },
+  { id: 'seibutsu-09', label: '魚の すみか', grade: 5, theme: 'seibutsu', regionId: 'seibutsu', x: 400, y: 758 },
+  { id: 'seibutsu-10', label: 'せい長を たすけよう', grade: 5, theme: 'seibutsu', regionId: 'seibutsu', x: 454, y: 758 },
+  { id: 'seibutsu-11', label: '花ふんを はこぼう', grade: 5, theme: 'seibutsu', regionId: 'seibutsu', x: 508, y: 758 },
+  { id: 'seibutsu-12', label: '食べる・食べられる', grade: 5, theme: 'seibutsu', regionId: 'seibutsu', x: 562, y: 758 },
+  { id: 'seibutsu-13', label: '体の中を たんけん', grade: 6, theme: 'seibutsu', regionId: 'seibutsu', x: 562, y: 812 },
+  { id: 'seibutsu-14', label: '空気の とおり道', grade: 6, theme: 'seibutsu', regionId: 'seibutsu', x: 508, y: 812 },
+  { id: 'seibutsu-15', label: 'けつえきを はこぼう', grade: 6, theme: 'seibutsu', regionId: 'seibutsu', x: 454, y: 812 },
+  { id: 'seibutsu-16', label: '体を かんせいさせよう', grade: 6, theme: 'seibutsu', regionId: 'seibutsu', x: 400, y: 812 },
 ]
 
 export const getIsland = (id: string) => islands.find((i) => i.id === id)

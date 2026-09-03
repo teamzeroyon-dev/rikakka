@@ -1,26 +1,37 @@
 'use client'
 import { useState } from 'react'
-import { Sparkles } from 'lucide-react'
-import type { ChemStage, QuizChoiceId, QuizQuestion } from '@/lib/quizProblems'
+import { Sparkles, Lightbulb, PartyPopper } from 'lucide-react'
+import type { QuizChoiceId, QuizQuestion, QuizSet } from '@/lib/quizProblems'
 
 type Tier = 'normal' | 'easy' | 'retry'
 type Feedback = { kind: 'wrong'; message: string } | { kind: 'transition'; message: string } | null
 
-const CHOICE_STYLES = ['border-[#4E8FC5] bg-[#eaf3fb]', 'border-[#3AA6A0] bg-[#e9f7f5]', 'border-[#E8B33A] bg-[#fdf6e6]']
+// One bold colour per answer slot so A/B/C stay tellable apart at a glance.
+const CHOICE_LOOK = [
+  { border: '#E2596B', bg: 'linear-gradient(#fff1f2,#ffe1e5)', badge: '#E2596B', shadow: '#b8384a' },
+  { border: '#3AA6A0', bg: 'linear-gradient(#ecfbf9,#d9f3f0)', badge: '#3AA6A0', shadow: '#227a75' },
+  { border: '#E8B33A', bg: 'linear-gradient(#fff9e8,#fdefcd)', badge: '#E8B33A', shadow: '#b8871f' },
+]
 
-function questionFor(stage: ChemStage, tier: Tier): QuizQuestion {
-  if (tier === 'normal') return stage.normal
-  if (tier === 'easy') return stage.easy
-  return stage.retry
+const TIER_LOOK: Record<Tier, { label: string; bg: string; icon: typeof Sparkles }> = {
+  normal: { label: 'もんだい', bg: 'linear-gradient(90deg,#4E8FC5,#3AA6A0)', icon: Sparkles },
+  easy: { label: 'ちょうかんたん もんだい', bg: 'linear-gradient(90deg,#5FB85F,#8FBF6B)', icon: Lightbulb },
+  retry: { label: 'さいちょうせん もんだい', bg: 'linear-gradient(90deg,#FF9040,#E8B33A)', icon: PartyPopper },
 }
 
-export function QuizFlow({ stage, onCleared }: { stage: ChemStage; onCleared: () => void }) {
+function questionFor(quiz: QuizSet, tier: Tier): QuizQuestion {
+  if (tier === 'normal') return quiz.normal
+  if (tier === 'easy') return quiz.easy
+  return quiz.retry
+}
+
+export function QuizFlow({ quiz, onCleared }: { quiz: QuizSet; onCleared: () => void }) {
   const [tier, setTier] = useState<Tier>('normal')
   const [normalWrongCount, setNormalWrongCount] = useState(0)
   const [selected, setSelected] = useState<QuizChoiceId | null>(null)
   const [feedback, setFeedback] = useState<Feedback>(null)
 
-  const question = questionFor(stage, tier)
+  const question = questionFor(quiz, tier)
 
   const handleChoose = (choiceId: QuizChoiceId) => {
     if (feedback) return
@@ -29,9 +40,9 @@ export function QuizFlow({ stage, onCleared }: { stage: ChemStage; onCleared: ()
 
     if (isCorrect) {
       if (tier === 'normal' || tier === 'retry') {
-        setFeedback({ kind: 'transition', message: '正解！' })
+        setFeedback({ kind: 'transition', message: 'せいかい！' })
       } else {
-        setFeedback({ kind: 'transition', message: 'できた！じゃあ、もう一回挑戦してみよう！' })
+        setFeedback({ kind: 'transition', message: 'できた！じゃあもう一回挑戦してみよう！' })
       }
       return
     }
@@ -70,34 +81,48 @@ export function QuizFlow({ stage, onCleared }: { stage: ChemStage; onCleared: ()
     // else: stay on the same tier/question for another try
   }
 
-  const tierLabel = tier === 'normal' ? '問題' : tier === 'easy' ? '超かんたん問題' : '再挑戦問題'
+  const tierLook = TIER_LOOK[tier]
+  const TierIcon = tierLook.icon
 
   return (
-    <div className="flex w-full flex-col gap-5">
+    <div className="flex w-full flex-col gap-4">
       <div className="flex items-center justify-center">
-        <span className="rounded-full bg-[#174d70] px-4 py-1 text-xs font-black text-white">{tierLabel}</span>
+        <span
+          className="flex items-center gap-2 rounded-full px-5 py-1.5 text-sm font-black text-white shadow-[0_3px_0_rgba(14,75,105,0.35)]"
+          style={{ background: tierLook.bg }}
+        >
+          <TierIcon className="size-4" aria-hidden="true" />
+          {tierLook.label}
+        </span>
       </div>
 
-      <p className="text-balance rounded-3xl bg-card p-5 text-center text-lg font-bold leading-relaxed shadow-sm">{question.prompt}</p>
+      <p className="text-balance rounded-3xl border-4 border-[#0e4b69] bg-gradient-to-b from-white to-[#f4fbfd] p-5 text-center text-lg font-black leading-relaxed text-[#3d3a38] shadow-[0_5px_0_#174d70]">
+        {question.prompt}
+      </p>
 
       <div className="flex flex-col gap-3">
         {question.choices.map((choice, i) => {
+          const look = CHOICE_LOOK[i % CHOICE_LOOK.length]
           const isSelected = selected === choice.id
           const showResult = !!feedback && isSelected
+          const resultBorder = feedback?.kind === 'wrong' ? '#e2596b' : '#3d8a3d'
+          const resultBg = feedback?.kind === 'wrong' ? 'linear-gradient(#fdeaec,#fbd8dd)' : 'linear-gradient(#eaf7ea,#d6f0d6)'
           return (
             <button
               key={choice.id}
               onClick={() => handleChoose(choice.id)}
               disabled={!!feedback}
-              className={`flex min-h-16 items-center gap-4 rounded-2xl border-2 px-5 text-left text-base font-bold leading-snug transition disabled:opacity-90 ${
-                showResult
-                  ? feedback?.kind === 'wrong'
-                    ? 'border-[#e2596b] bg-[#fdeaec]'
-                    : 'border-[#3d8a3d] bg-[#eaf7ea]'
-                  : CHOICE_STYLES[i % CHOICE_STYLES.length]
-              }`}
+              className="flex min-h-[4.5rem] items-center gap-4 rounded-3xl border-4 px-4 text-left text-base font-black leading-snug transition active:translate-y-1 disabled:opacity-95"
+              style={{
+                borderColor: showResult ? resultBorder : look.border,
+                background: showResult ? resultBg : look.bg,
+                boxShadow: `0 5px 0 ${showResult ? resultBorder : look.shadow}`,
+              }}
             >
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-sm font-black text-[#3d3a38] shadow-sm">
+              <span
+                className="flex size-11 shrink-0 items-center justify-center rounded-full text-lg font-black text-white shadow-inner"
+                style={{ background: showResult ? resultBorder : look.badge }}
+              >
                 {choice.id}
               </span>
               <span className="flex-1 text-[#3d3a38]">{choice.text}</span>
@@ -108,17 +133,20 @@ export function QuizFlow({ stage, onCleared }: { stage: ChemStage; onCleared: ()
 
       {feedback && (
         <div
-          className={`flex flex-col items-center gap-3 rounded-3xl p-5 text-center shadow-sm ${
-            feedback.kind === 'wrong' ? 'bg-[#fdeaec]' : 'bg-[#eaf7ea]'
-          }`}
+          className="animate-chem-fade-in flex flex-col items-center gap-3 rounded-3xl border-4 p-5 text-center shadow-[0_5px_0_rgba(14,75,105,0.2)]"
+          style={
+            feedback.kind === 'wrong'
+              ? { borderColor: '#e2596b', background: 'linear-gradient(#fff1f2,#ffe1e5)' }
+              : { borderColor: '#3d8a3d', background: 'linear-gradient(#f0fbef,#dcf3da)' }
+          }
         >
-          <p className="flex items-center gap-2 text-lg font-black text-[#3d3a38]">
-            {feedback.kind === 'transition' && <Sparkles className="size-5 text-[#e8b33a]" aria-hidden="true" />}
-            {feedback.message}
-          </p>
+          <span className="text-4xl" aria-hidden="true">
+            {feedback.kind === 'wrong' ? '🤔' : '🎉'}
+          </span>
+          <p className="text-lg font-black text-[#3d3a38]">{feedback.message}</p>
           <button
             onClick={handleContinue}
-            className="min-h-12 rounded-full bg-[#174d70] px-8 text-base font-black text-white shadow-sm active:scale-95"
+            className="min-h-12 rounded-full bg-[#174d70] px-10 text-base font-black text-white shadow-[0_4px_0_#0e3450] active:translate-y-1"
           >
             つづける
           </button>

@@ -10,7 +10,7 @@ export function DiagnosisClient() {
   const top = result.topArchetype ? THEME_INFO[result.topArchetype] : null
 
   return (
-    <main className="min-h-screen bg-background px-5 py-6 text-foreground">
+    <main className="min-h-[var(--stage-h)] bg-background px-5 py-6 text-foreground">
       <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
         <header className="flex items-center gap-3">
           <Link href="/bag" className="flex size-12 items-center justify-center rounded-lg border border-border" aria-label="もどる">
