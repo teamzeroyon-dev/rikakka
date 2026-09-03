@@ -41,7 +41,7 @@ export type SugorokuNode = {
 }
 
 export const WORLD_W = 1200
-export const WORLD_H = 1900
+export const WORLD_H = 1000
 
 export const islands: Island[] = [
   {
@@ -59,23 +59,7 @@ export const islands: Island[] = [
       { x: 345, y: 782 }, { x: 297, y: 682 },
     ],
   },
-  {
-    id: 'math',
-    name: 'さんすう島',
-    labelPos: { x: 595, y: 1108 },
-    fill: '#D9E8E6',
-    stroke: '#5E8A85',
-    status: 'comingSoon',
-    outline: [
-      { x: 310, y: 1330 }, { x: 350, y: 1240 }, { x: 450, y: 1180 }, { x: 570, y: 1160 },
-      { x: 700, y: 1172 }, { x: 810, y: 1215 }, { x: 880, y: 1290 }, { x: 890, y: 1390 },
-      { x: 830, y: 1470 }, { x: 710, y: 1525 }, { x: 570, y: 1545 }, { x: 440, y: 1520 },
-      { x: 345, y: 1450 }, { x: 308, y: 1380 },
-    ],
-  },
 ]
-
-export const mathIslandCenter: Point = { x: 595, y: 1355 }
 
 export const mapRegions: MapRegion[] = [
   {
