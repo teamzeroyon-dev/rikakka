@@ -31,6 +31,9 @@ function BalanceExperiment({ itemA, itemB, onDone }: { itemA: { label: string; g
   const [placed, setPlaced] = useState(false)
   const svgRef = useRef<SVGSVGElement>(null)
   const [dragY, setDragY] = useState<number | null>(null)
+  // Heavier pan must dip DOWN. In SVG (y points down) a positive rotate() is
+  // clockwise, which lowers the right pan — so when the right item (itemB) is
+  // heavier the angle must be positive.
   const tilt = placed ? Math.max(-14, Math.min(14, (itemB.grams - itemA.grams) / Math.max(itemA.grams, itemB.grams) * 14)) : 0
 
   const down = (e: React.PointerEvent) => {
@@ -56,7 +59,7 @@ function BalanceExperiment({ itemA, itemB, onDone }: { itemA: { label: string; g
     <div className="flex flex-col items-center gap-3">
       <Instruction text={placed ? `${itemA.label} ${itemA.grams}g／${itemB.label} ${itemB.grams}g` : `${itemB.label}のチップを、右のさらまでドラッグしよう`} />
       <svg ref={svgRef} viewBox={VB} className="w-full max-w-[380px] select-none" style={{ touchAction: 'none' }} onPointerMove={move} onPointerUp={up} onPointerLeave={up}>
-        <g style={{ transform: `rotate(${-tilt}deg)`, transformOrigin: '170px 90px', transition: 'transform 300ms ease-out' }}>
+        <g style={{ transform: `rotate(${tilt}deg)`, transformOrigin: '170px 90px', transition: 'transform 300ms ease-out' }}>
           <line x1="60" y1="90" x2="280" y2="90" stroke="var(--chem-pan)" strokeWidth={6} strokeLinecap="round" />
           <rect x={38} y={80} width={44} height={26} rx={6} fill={itemA.color} stroke="white" strokeWidth={2} />
           <text x={60} y={98} textAnchor="middle" fontSize={10} fontWeight={700} fill="white">{itemA.grams}g</text>
