@@ -9,6 +9,8 @@ import { ScienceActivity } from '@/components/ScienceActivity'
 import { QuizFlow } from '@/components/QuizFlow'
 import { StageClearCelebration } from '@/components/StageClearCelebration'
 import { StageShell, LearnCard } from '@/components/StageShell'
+import { RealWorldCard } from '@/components/RealWorldCard'
+import { getRealWorld } from '@/lib/realWorld'
 
 type Phase = 'experiment' | 'learn' | 'quiz' | 'clear'
 
@@ -18,6 +20,7 @@ export function ScienceStageClient({ id }: { id: string }) {
   const stage = getScienceStage(id) ?? getScienceStage('chigaku-01')!
   const next = getNextScienceStage(stage.id)
   const total = getScienceStagesForRegion(stage.regionId).length
+  const realWorld = getRealWorld(stage.id)
   const [phase, setPhase] = useState<Phase>('experiment')
 
   const handleQuizCleared = () => {
@@ -42,14 +45,16 @@ export function ScienceStageClient({ id }: { id: string }) {
       )}
 
       {phase === 'learn' && (
-        <LearnCard icon={stage.regionId === 'chigaku' ? <Mountain className="size-5" /> : <Sprout className="size-5" />} line={stage.learningLine}>
+        <div className="flex flex-col gap-4">
+          <LearnCard icon={stage.regionId === 'chigaku' ? <Mountain className="size-5" /> : <Sprout className="size-5" />} line={stage.learningLine} />
+          {realWorld && <RealWorldCard data={realWorld} />}
           <button
             onClick={() => setPhase('quiz')}
             className="mx-auto flex min-h-14 items-center gap-2 rounded-2xl bg-[#5FB85F] px-8 text-base font-black text-white shadow-[0_4px_0_#3c8b3c] active:translate-y-1"
           >
             クイズに ちょうせん <ArrowRight className="size-4" />
           </button>
-        </LearnCard>
+        </div>
       )}
 
       {phase === 'quiz' && <QuizFlow quiz={stage} onCleared={handleQuizCleared} />}
