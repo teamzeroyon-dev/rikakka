@@ -1,7 +1,21 @@
 'use client'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Sparkles, Lightbulb, PartyPopper } from 'lucide-react'
 import type { QuizChoiceId, QuizQuestion, QuizSet } from '@/lib/quizProblems'
+
+// The source data almost always lists the correct choice first, so display order
+// is shuffled per question — the correct answer lands in a random slot and the
+// A/B/C badge is assigned by position, not by the choice's original id.
+function shuffled<T>(items: T[]): T[] {
+  const out = [...items]
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[out[i], out[j]] = [out[j], out[i]]
+  }
+  return out
+}
+
+const BADGES = ['A', 'B', 'C', 'D']
 
 type Tier = 'normal' | 'easy' | 'retry'
 type Feedback = { kind: 'wrong'; message: string } | { kind: 'transition'; message: string } | null
@@ -32,6 +46,9 @@ export function QuizFlow({ quiz, onCleared }: { quiz: QuizSet; onCleared: () => 
   const [feedback, setFeedback] = useState<Feedback>(null)
 
   const question = questionFor(quiz, tier)
+  // Reshuffle only when the question itself changes (tier switch), so the order
+  // stays stable while the child is looking at one question.
+  const displayChoices = useMemo(() => shuffled(question.choices), [question])
 
   const handleChoose = (choiceId: QuizChoiceId) => {
     if (feedback) return
@@ -101,7 +118,7 @@ export function QuizFlow({ quiz, onCleared }: { quiz: QuizSet; onCleared: () => 
       </p>
 
       <div className="flex flex-col gap-3">
-        {question.choices.map((choice, i) => {
+        {displayChoices.map((choice, i) => {
           const look = CHOICE_LOOK[i % CHOICE_LOOK.length]
           const isSelected = selected === choice.id
           const showResult = !!feedback && isSelected
@@ -123,7 +140,7 @@ export function QuizFlow({ quiz, onCleared }: { quiz: QuizSet; onCleared: () => 
                 className="flex size-11 shrink-0 items-center justify-center rounded-full text-lg font-black text-white shadow-inner"
                 style={{ background: showResult ? resultBorder : look.badge }}
               >
-                {choice.id}
+                {BADGES[i]}
               </span>
               <span className="flex-1 text-[#3d3a38]">{choice.text}</span>
             </button>
