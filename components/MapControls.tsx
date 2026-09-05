@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { Backpack, Compass, Home, Minus, Plus, Smile, Sparkles, Trophy } from 'lucide-react'
+import { Backpack, Compass, Home, Minus, Plus, Smile, Sparkles, Target, Trophy } from 'lucide-react'
 
 export function MapControls({
   points,
@@ -42,6 +42,13 @@ export function MapControls({
             <span className="text-sm font-black text-[#8a6a1e]">›</span>
           </Link>
           <div className="flex items-center gap-2">
+            <Link
+              href="/challenge"
+              aria-label="現実チャレンジ"
+              className="flex size-12 items-center justify-center rounded-full border-2 border-[#0e4b69] bg-[#4E8FC5] text-white shadow-[0_4px_0_#174d70]"
+            >
+              <Target className="size-6" />
+            </Link>
             <Link
               href="/avatar"
               aria-label="アバター"
