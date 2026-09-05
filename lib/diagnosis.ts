@@ -3,15 +3,18 @@ import { problems, type Problem } from '@/lib/problems'
 // One entry per problem "archetype" (theme). New archetypes (e.g. magnets,
 // circuits) just need an entry added here — the ratio/diagnosis logic below
 // works for any number of themes.
-export const THEME_INFO: Record<Problem['archetype'], { label: string; job: string; jobDesc: string }> = {
+export const THEME_INFO: Record<Problem['archetype'], { label: string; job: string; nearName: string; jobDesc: string }> = {
   balance: {
     label: 'てこ・つり合い',
     job: '建築家・エンジニア',
+    // Short, catchy job name for the home-screen teaser ("〜に近い！").
+    nearName: 'けんちくエンジニア',
     jobDesc: 'てこや つり合いの しくみは、橋やクレーン、たてものを つくる人たちが 毎日つかっている考え方だよ。ものの バランスを 見つけるのが 得意なきみは、そうけい（設計）の 仕事に むいてるかも！',
   },
   launch: {
     label: 'ゴムの力',
     job: '宇宙飛行士・エンジニア',
+    nearName: 'ロケットエンジニア',
     jobDesc: 'ゴムの力で ものを とばす しくみは、ロケットや じどう車を つくる エンジニアたちの けんきゅうに つながっているよ。きょりを ねらって とばすのが 得意なきみは、宇宙飛行士 むいてるかも！',
   },
 }

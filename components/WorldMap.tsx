@@ -30,6 +30,7 @@ import { useSave } from '@/lib/progress'
 import { getProblem } from '@/lib/problems'
 import { getChemStage } from '@/lib/quizProblems'
 import { getScienceStage } from '@/lib/scienceStages'
+import { computeDiagnosis, THEME_INFO } from '@/lib/diagnosis'
 
 type Toast = { id: number; message: string }
 type Pointer = { x: number; y: number }
@@ -329,6 +330,9 @@ export function WorldMap() {
       : null
   const lockedNodeData = lockedNode ? getSugorokuNode(lockedNode) : null
   const prevOfLocked = lockedNode ? getPrevNodeInRegion(lockedNode) : null
+  // Surface the interest-diagnosis result on the home top bar.
+  const diagTop = computeDiagnosis(save.cleared).topArchetype
+  const diagnosisNear = diagTop ? THEME_INFO[diagTop].nearName : null
 
   return (
     <div ref={containerRef} className="relative h-[var(--stage-h)] w-full touch-none overflow-hidden overscroll-none bg-[#CFE6EE]">
@@ -355,6 +359,7 @@ export function WorldMap() {
         onZoomOut={() => zoomBy(1 / 1.5)}
         onHome={onHome}
         regionPill={regionPill}
+        diagnosisNear={diagnosisNear}
       />
 
       {toast && (

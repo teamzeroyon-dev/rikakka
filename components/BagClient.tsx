@@ -40,12 +40,6 @@ export function BagClient() {
         <p className="text-center text-sm text-muted-foreground">
           クリアしたカード {cleared.length} / {problems.length}
         </p>
-        <Link
-          href="/diagnosis"
-          className="rounded-2xl border border-border bg-card px-4 py-4 text-center font-bold shadow-sm"
-        >
-           きみの きょうみ診断を みる
-        </Link>
       </div>
     </main>
   )
