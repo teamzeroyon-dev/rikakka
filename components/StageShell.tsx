@@ -9,6 +9,7 @@ const THEMES = {
   kagaku: { page: 'linear-gradient(#dff2f7,#c9e8f2)', bar: 'linear-gradient(90deg,#3AA6A0,#4E8FC5)', shadow: '#227a75' },
   chigaku: { page: 'linear-gradient(#fbecd8,#f6dcbb)', bar: 'linear-gradient(90deg,#C07A3E,#E8B33A)', shadow: '#93571f' },
   seibutsu: { page: 'linear-gradient(#e4f6da,#d0eec2)', bar: 'linear-gradient(90deg,#5FB85F,#3AA6A0)', shadow: '#3c8b3c' },
+  butsuri: { page: 'linear-gradient(#ffe9d6,#ffd8bd)', bar: 'linear-gradient(90deg,#FF9040,#F7C94B)', shadow: '#c96a1e' },
 } as const
 
 export type StageTheme = keyof typeof THEMES
