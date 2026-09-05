@@ -86,7 +86,7 @@ function SliderScene({ scene, value, steps }: { scene: string; value: number; st
         <span className="absolute left-[4%] top-1/2 -translate-y-1/2 text-4xl">☀️</span>
         <div className="absolute left-1/2 top-1/2 size-14 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#4E8FC5] text-center text-3xl leading-[3.5rem]">🌏</div>
         <div
-          className="absolute size-11 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[#f7f0d8] transition-all duration-200"
+          className="absolute size-11 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[#f7f0d8]"
           style={{ left: `${mx}%`, top: `${my}%`, background: `linear-gradient(90deg, #6b6d7d ${100 - lit}%, #fdf6d8 ${100 - lit}%)` }}
         />
         <span className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-white/90 px-3 py-1 text-xs font-black text-[#174d70]">
@@ -101,7 +101,7 @@ function SliderScene({ scene, value, steps }: { scene: string; value: number; st
     const my = 62 - Math.sin(t * Math.PI) * 42
     return (
       <Board sky="linear-gradient(#20305c,#5b6ea8)" ground="linear-gradient(#3c5a3c,#2c4530)">
-        <div className="absolute size-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#fdf6d8] shadow-[0_0_24px_#fdf6d8] transition-all duration-200" style={{ left: `${mx}%`, top: `${my}%` }} />
+        <div className="absolute size-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#fdf6d8] shadow-[0_0_24px_#fdf6d8]" style={{ left: `${mx}%`, top: `${my}%` }} />
         {[18, 34, 58, 76, 88].map((x, i) => (
           <span key={x} className="absolute text-xs text-white/80" style={{ left: `${x}%`, top: `${14 + (i % 3) * 9}%` }}>
             ✦
