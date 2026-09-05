@@ -191,20 +191,27 @@ function Mouth({ i }: { i: number }) {
 function Body({ i, ci }: { i: number; ci: number }) {
   const widths = [78, 86, 94, 102, 82, 90, 98, 106]
   const w = widths[i % widths.length]
+  const halfW = w / 2
   const color = CLOTHES_COLORS[ci % CLOTHES_COLORS.length]
   const collar = ci % 3 === 0
   return (
     <g>
       {/* neck */}
       <rect x={90} y={182} width={20} height={22} rx={8} fill={SKIN} stroke={SKIN_LINE} strokeWidth={2.5} />
-      {/* shoulders + shirt */}
+      {/* shoulders + shirt, anchored to the neck's bottom corners so there's no gap */}
       <path
-        d={`M${100 - w / 2} 300 Q100 196 ${100 + w / 2} 300 Z`}
+        d={`M90 204 Q100 208 110 204 Q ${100 + halfW - 10} 212 ${100 + halfW} 300 L ${100 - halfW} 300 Q ${100 - halfW + 10} 212 90 204 Z`}
         fill={color}
         stroke="#0e4b69"
         strokeWidth={3}
       />
-      <path d={`M${100 - w / 2} 300 Q100 196 ${100 + w / 2} 300`} fill="none" stroke="#fff" strokeWidth={1.5} opacity={0.3} />
+      <path
+        d={`M${100 - halfW + 10} 212 Q${100 - halfW / 3} 240 ${100 - halfW} 300`}
+        fill="none"
+        stroke="#fff"
+        strokeWidth={1.5}
+        opacity={0.3}
+      />
       {collar && <path d="M84 210 L100 228 L116 210" fill="none" stroke="#fff" strokeWidth={3.5} strokeLinecap="round" />}
     </g>
   )
