@@ -124,7 +124,10 @@ export function LaunchCourse({
         setLaunching((l) => ({ ...l, [id]: false }))
         setRestDistance((r) => ({ ...r, [id]: distance }))
         setRecords((r) => {
-          const hit = Math.round(distance) === Math.round(goals[id].minCm)
+          // Reaching OR passing the goal line counts (matches the green success
+          // zone). The goal distance is a random integer, but the car only travels
+          // discrete 4·band·stretch² distances, so exact equality was unreachable.
+          const hit = Math.round(distance) >= Math.round(goals[id].minCm)
           const updated = { ...r, [id]: [...(r[id] ?? []), { stretch, distance, hit }] }
           const allDone = lanes.every((l) => (updated[l.id] ?? []).some((x) => x.hit))
           if (allDone) {
@@ -144,7 +147,7 @@ export function LaunchCourse({
   const all = lanes.flatMap((l) => records[l.id] ?? [])
   const currentRest = restDistance[selected] ?? null
   const currentGoal = goals?.[selected]
-  const currentHit = currentRest != null && currentGoal ? Math.round(currentRest) === Math.round(currentGoal.minCm) : null
+  const currentHit = currentRest != null && currentGoal ? Math.round(currentRest) >= Math.round(currentGoal.minCm) : null
 
   if (!goals) {
     return (
@@ -272,7 +275,7 @@ export function LaunchCourse({
 
       {currentHit != null && (
         <p className={`rounded-xl px-4 py-2 text-center text-sm font-bold ${currentHit ? 'bg-[#5FB85F]/20 text-[#3D8B3D]' : 'bg-accent text-muted-foreground'}`}>
-          {currentHit ? 'ゴールに ぴったり とどいた！' : `ゴールまで あと ${Math.abs(Math.round((currentGoal?.minCm ?? 0) - (currentRest ?? 0)))}cm。長さを 調整しよう`}
+          {currentHit ? 'ゴールに とどいた！' : `ゴールまで あと ${Math.abs(Math.round((currentGoal?.minCm ?? 0) - (currentRest ?? 0)))}cm。もっと のばそう`}
         </p>
       )}
 
