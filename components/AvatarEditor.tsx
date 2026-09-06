@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useState, useTransition } from 'react'
-import { ArrowLeft, Lock, Sparkles, Check } from 'lucide-react'
+import { ArrowLeft, Lock, Sparkles, Check, SkipForward } from 'lucide-react'
 import { useSave, refreshSave } from '@/lib/progress'
 import { AVATAR_CATALOG, PART_TYPES, PART_TYPE_LABELS, DEFAULT_EQUIPPED, type PartType } from '@/lib/avatarParts'
 import { AvatarPreview, HairColorSwatch, type EquippedParts } from '@/components/AvatarPreview'
@@ -59,9 +59,21 @@ export function AvatarEditor() {
               <ArrowLeft className="size-4" /> もどる
             </Link>
           )}
-          <span className="flex items-center gap-1 rounded-full border-2 border-[#0e4b69] bg-[#f7c94b] px-3 py-1 text-sm font-black text-[#3d3a38] shadow-[0_3px_0_#174d70]">
-            <Sparkles className="size-4" /> {save.points}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1 rounded-full border-2 border-[#0e4b69] bg-[#f7c94b] px-3 py-1 text-sm font-black text-[#3d3a38] shadow-[0_3px_0_#174d70]">
+              <Sparkles className="size-4" /> {save.points}
+            </span>
+            {/* First-time onboarding: let kids jump straight in with the default look. */}
+            {isNew && (
+              <Link
+                href="/"
+                aria-label="スキップして はじめる"
+                className="flex items-center gap-1 rounded-full border-2 border-[#0e4b69] bg-white px-3 py-1 text-sm font-black text-[#3d3a38] shadow-[0_3px_0_#174d70]"
+              >
+                スキップ <SkipForward className="size-4" />
+              </Link>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-col items-center gap-2 rounded-3xl border-2 border-[#0e4b69] bg-[#fdf9ef] py-6 shadow-[0_4px_0_#174d70]">
