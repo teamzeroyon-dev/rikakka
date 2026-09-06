@@ -34,8 +34,8 @@ function BalanceExperiment({
   refImage,
   onDone,
 }: {
-  itemA: { label: string; grams: number; color: string }
-  itemB: { label: string; grams: number; color: string }
+  itemA: { label: string; grams: number; color: string; shape?: string }
+  itemB: { label: string; grams: number; color: string; shape?: string }
   refImage?: string
   onDone: () => void
 }) {
@@ -90,12 +90,29 @@ function BalanceExperiment({
       <path d={`M ${cx - 34} ${cy} Q ${cx} ${cy + 18} ${cx + 34} ${cy} Z`} fill="var(--chem-pan)" stroke="#8a7a4a" strokeWidth={2} strokeLinejoin="round" />
     </>
   )
-  const Weight = ({ cx, cy, color, grams }: { cx: number; cy: number; color: string; grams: number }) => (
-    <g style={{ transition: 'transform 250ms ease-out' }} transform={`translate(${cx},${cy})`}>
-      <rect x={-24} y={-26} width={48} height={26} rx={6} fill={color} stroke="white" strokeWidth={2} />
-      <text x={0} y={-8} textAnchor="middle" fontSize={10} fontWeight={700} fill="white">{grams}g</text>
-    </g>
-  )
+  const Weight = ({ cx, cy, color, grams, shape }: { cx: number; cy: number; color: string; grams: number; shape?: string }) => {
+    if (shape === 'balloon' || shape === 'balloon-empty') {
+      const empty = shape === 'balloon-empty'
+      // teardrop balloon body; bottom tip sits on the dish (y≈0), knot just below
+      const body = empty
+        ? 'M0,-30 C 9,-30 12,-20 12,-15 C 12,-8 6,-3 1,0 L0,3 L-1,0 C -6,-3 -12,-8 -12,-15 C -12,-20 -9,-30 0,-30 Z'
+        : 'M0,-44 C 13,-44 18,-30 18,-22 C 18,-11 9,-3 2,0 L0,4 L-2,0 C -9,-3 -18,-11 -18,-22 C -18,-30 -13,-44 0,-44 Z'
+      return (
+        <g style={{ transition: 'transform 250ms ease-out' }} transform={`translate(${cx},${cy}) rotate(${empty ? -12 : 0})`}>
+          <path d={body} fill={color} stroke="white" strokeWidth={2} strokeLinejoin="round" />
+          <path d={empty ? 'M-3,2 L3,2 L0,7 Z' : 'M-4,2 L4,2 L0,8 Z'} fill={color} stroke="white" strokeWidth={1.5} strokeLinejoin="round" />
+          <ellipse cx={-5} cy={empty ? -20 : -30} rx={empty ? 2.5 : 3.5} ry={empty ? 4 : 6} fill="white" opacity={0.45} />
+          <text x={0} y={empty ? -14 : -22} textAnchor="middle" fontSize={9} fontWeight={700} fill="white">{grams}g</text>
+        </g>
+      )
+    }
+    return (
+      <g style={{ transition: 'transform 250ms ease-out' }} transform={`translate(${cx},${cy})`}>
+        <rect x={-24} y={-26} width={48} height={26} rx={6} fill={color} stroke="white" strokeWidth={2} />
+        <text x={0} y={-8} textAnchor="middle" fontSize={10} fontWeight={700} fill="white">{grams}g</text>
+      </g>
+    )
+  }
 
   return (
     <div className="flex flex-col items-center gap-3">
@@ -113,13 +130,13 @@ function BalanceExperiment({
         {/* left dish + itemA */}
         <g style={{ transition: 'transform 250ms ease-out' }}>
           <Dish cx={lx} cy={ly + chain} />
-          <Weight cx={lx} cy={ly + chain} color={itemA.color} grams={itemA.grams} />
+          <Weight cx={lx} cy={ly + chain} color={itemA.color} grams={itemA.grams} shape={itemA.shape} />
         </g>
         {/* right dish (drop target) */}
         <Dish cx={rx} cy={ry + chain} />
         <ellipse data-drop="dish" cx={rx} cy={ry + chain - 6} rx={46} ry={26} fill="transparent" style={{ pointerEvents: 'all' }} />
         {placed ? (
-          <Weight cx={rx + dropX * 18} cy={ry + chain} color={itemB.color} grams={itemB.grams} />
+          <Weight cx={rx + dropX * 18} cy={ry + chain} color={itemB.color} grams={itemB.grams} shape={itemB.shape} />
         ) : (
           <text x={rx} y={ry + chain + 4} textAnchor="middle" fontSize={9} fontWeight={700} fill="#8a7a4a" style={{ pointerEvents: 'none' }}>ここへ</text>
         )}

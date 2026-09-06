@@ -5,8 +5,10 @@ export type QuizQuestion = {
   correctId: QuizChoiceId
 }
 
+export type ItemShape = 'weight' | 'balloon' | 'balloon-empty'
+
 export type ChemExperimentConfig =
-  | { kind: 'balance'; itemA: { label: string; grams: number; color: string }; itemB: { label: string; grams: number; color: string }; refImage?: string }
+  | { kind: 'balance'; itemA: { label: string; grams: number; color: string; shape?: ItemShape }; itemB: { label: string; grams: number; color: string; shape?: ItemShape }; refImage?: string }
   | { kind: 'conserve-weight'; itemA: { label: string; grams: number }; itemB: { label: string; grams: number } }
   | { kind: 'clay-press'; label: string; grams: number }
   | { kind: 'linear-push'; label: string; compareWater?: boolean }
@@ -125,7 +127,7 @@ export const chemStages: ChemStage[] = [
     title: '空気って重い？',
       curriculum: { code: '理科 4年', unit: '空気と水の性質' },
     learningLine: '目には見えない空気にも、実は重さがあるんだよ！',
-    experiment: { kind: 'balance', itemA: { label: 'ぬいた風船', grams: 5, color: '#e2596b' }, itemB: { label: '空気入り風船', grams: 6, color: '#e2596b' } },
+    experiment: { kind: 'balance', itemA: { label: 'ぬいた風船', grams: 5, color: '#e2596b', shape: 'balloon-empty' }, itemB: { label: '空気入り風船', grams: 6, color: '#e2596b', shape: 'balloon' } },
     normal: {
       prompt: '空気を入れた風船と、空気を抜いた風船を比べました。空気を入れた風船の方が少し重くなりました。これは、なぜでしょうか。',
       choices: [{ id: 'A', text: '空気にも重さがあるから' }, { id: 'B', text: '風船が厚くなったから' }, { id: 'C', text: '風船がなぜかおもくなったから' }],
