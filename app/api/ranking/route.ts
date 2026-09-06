@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { usageWeekly, users, weeklyRewards } from '@/lib/db/schema'
 import { desc, eq } from 'drizzle-orm'
-import { currentWeekStart, previousWeekStart } from '@/lib/week'
+import { currentWeekStart, previousWeekStart, nextWeekBoundary } from '@/lib/week'
 import { getCurrentUserId } from '@/lib/session'
+import { WEEKLY_REWARD_BY_RANK } from '@/lib/economy'
 
 export async function GET() {
   const userId = await getCurrentUserId()
@@ -41,5 +42,7 @@ export async function GET() {
     board: boardRows.map((r, i) => ({ rank: i + 1, name: r.name, prefecture: r.prefecture, minutes: Math.round(r.seconds / 60), isMe: r.userId === userId })),
     myRank: myRank === -1 ? null : myRank + 1,
     lastWeekWinners,
+    nextResetAt: nextWeekBoundary(),
+    rewards: WEEKLY_REWARD_BY_RANK,
   })
 }

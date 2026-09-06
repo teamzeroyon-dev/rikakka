@@ -1,13 +1,16 @@
 'use client'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
-import { ArrowLeft, Crown, Trophy } from 'lucide-react'
+import { ArrowLeft, Coins, Crown, Timer, Trophy } from 'lucide-react'
 
 type Board = {
   weekStart: string
   board: { rank: number; name: string; prefecture: string; minutes: number; isMe: boolean }[]
   myRank: number | null
   lastWeekWinners: { userId: string; rank: number; coinsAwarded: number; name: string }[]
+  nextResetAt: string
+  rewards: number[]
 }
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
@@ -22,8 +25,37 @@ function rankLook(rank: number) {
   return RANK_LOOK[rank - 1] ?? { bg: '#eef4f7', ring: '#cfe0e8', text: '#3d3a38' }
 }
 
+// Live "time until the ranking finalizes" countdown.
+function Countdown({ target }: { target: string }) {
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(id)
+  }, [])
+  const ms = Math.max(0, new Date(target).getTime() - now)
+  const total = Math.floor(ms / 1000)
+  const days = Math.floor(total / 86400)
+  const hours = Math.floor((total % 86400) / 3600)
+  const mins = Math.floor((total % 3600) / 60)
+  const secs = total % 60
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return (
+    <div className="flex items-center gap-2 rounded-3xl border-4 border-white bg-gradient-to-r from-[#7C5BD0] to-[#B06AD8] px-4 py-3 text-white shadow-[0_5px_0_#5a3aa0]">
+      <Timer className="size-6 shrink-0" />
+      <div className="flex-1">
+        <p className="text-xs font-bold text-white/80">ランキング かくてい まで</p>
+        <p className="text-lg font-black tabular-nums">
+          {days > 0 && <span>{days}日 </span>}
+          {pad(hours)}:{pad(mins)}:{pad(secs)}
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export function RankingClient() {
   const { data } = useSWR<Board>('/api/ranking', fetcher, { refreshInterval: 15_000 })
+  const rewards = data?.rewards ?? [50, 30, 15]
 
   return (
     <main className="min-h-[var(--stage-h)] px-4 py-5 text-foreground" style={{ background: 'linear-gradient(#fff4d9,#ffe4bd)' }}>
@@ -41,6 +73,25 @@ export function RankingClient() {
           アプリを つかった 時間の ランキングだよ。毎週 日曜 午後6時に こうしんされて、上位3人に コインが プレゼント！
         </p>
 
+        {data?.nextResetAt && <Countdown target={data.nextResetAt} />}
+
+        <section className="rounded-3xl border-4 border-[#f7c94b] bg-white/90 p-4 shadow-[0_5px_0_#d9a72c]">
+          <h2 className="mb-2 flex items-center gap-1 text-sm font-black text-[#c96a1e]">
+            <Coins className="size-4" /> もらえる コイン
+          </h2>
+          <ul className="flex flex-wrap gap-2">
+            {rewards.map((coins, i) => {
+              const look = rankLook(i + 1)
+              return (
+                <li key={i} className="flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-black" style={{ background: look.bg, border: `2px solid ${look.ring}`, color: look.text }}>
+                  <span>{i + 1}位</span>
+                  <span className="flex items-center gap-0.5"><Coins className="size-4" />+{coins}</span>
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+
         {data?.lastWeekWinners && data.lastWeekWinners.length > 0 && (
           <section className="rounded-3xl border-4 border-[#f7c94b] bg-white/90 p-4 shadow-[0_5px_0_#d9a72c]">
             <h2 className="mb-2 flex items-center gap-1 text-sm font-black text-[#c96a1e]">
@@ -55,7 +106,7 @@ export function RankingClient() {
                       {w.rank}
                     </span>
                     <span className="flex-1 font-black text-[#3d3a38]">{w.name}</span>
-                    <span className="rounded-full bg-[#f7c94b] px-3 py-0.5 text-xs font-black text-[#7a5a10]">+{w.coinsAwarded}</span>
+                    <span className="flex items-center gap-0.5 rounded-full bg-[#f7c94b] px-3 py-0.5 text-xs font-black text-[#7a5a10]"><Coins className="size-3.5" />+{w.coinsAwarded}</span>
                   </li>
                 )
               })}
@@ -73,6 +124,7 @@ export function RankingClient() {
           {data?.board.map((row) => {
             const look = rankLook(row.rank)
             const top3 = row.rank <= 3
+            const prize = rewards[row.rank - 1]
             return (
               <div
                 key={row.rank}
@@ -94,6 +146,11 @@ export function RankingClient() {
                   </p>
                   <p className="text-xs font-bold text-[#8a8478]">{row.prefecture}</p>
                 </div>
+                {prize != null && (
+                  <span className="flex shrink-0 items-center gap-0.5 rounded-full bg-[#fff3cf] px-2.5 py-1 text-xs font-black text-[#7a5a10]" style={{ border: `2px solid ${look.ring}` }}>
+                    <Coins className="size-3.5" />+{prize}
+                  </span>
+                )}
                 <span className="shrink-0 rounded-full bg-white/70 px-3 py-1 text-sm font-black text-[#3d3a38]">{row.minutes}分</span>
               </div>
             )

@@ -3,9 +3,8 @@ import { db } from '@/lib/db'
 import { usageWeekly, weeklyRewards, users } from '@/lib/db/schema'
 import { desc, eq, sql } from 'drizzle-orm'
 import { previousWeekStart } from '@/lib/week'
+import { WEEKLY_REWARD_BY_RANK } from '@/lib/economy'
 
-// Rewards for the top 3 users by usage time, keyed by finishing rank (1st/2nd/3rd).
-const REWARD_BY_RANK = [50, 30, 15]
 
 // Vercel Cron calls this on a schedule (see vercel.json). Runs once per week,
 // paying out the PREVIOUS week's top usage-time users. The unique
@@ -24,13 +23,13 @@ export async function GET(request: Request) {
     .from(usageWeekly)
     .where(eq(usageWeekly.weekStart, weekStart))
     .orderBy(desc(usageWeekly.seconds))
-    .limit(REWARD_BY_RANK.length)
+    .limit(WEEKLY_REWARD_BY_RANK.length)
 
   const awarded: { userId: string; rank: number; coins: number }[] = []
 
   for (let i = 0; i < top.length; i++) {
     const rank = i + 1
-    const coins = REWARD_BY_RANK[i]
+    const coins = WEEKLY_REWARD_BY_RANK[i]
     const inserted = await db
       .insert(weeklyRewards)
       .values({ weekStart, userId: top[i].userId, rank, coinsAwarded: coins })

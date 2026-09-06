@@ -13,3 +13,11 @@ export function previousWeekStart(now = new Date()): string {
   current.setUTCDate(current.getUTCDate() - 7)
   return current.toISOString().slice(0, 10)
 }
+
+// The moment the CURRENT ranking week finalizes: the next Sunday 09:00 UTC
+// (18:00 JST) boundary. Returned as a full ISO timestamp for countdowns.
+export function nextWeekBoundary(now = new Date()): string {
+  const start = new Date(currentWeekStart(now) + 'T09:00:00.000Z')
+  start.setUTCDate(start.getUTCDate() + 7)
+  return start.toISOString()
+}
