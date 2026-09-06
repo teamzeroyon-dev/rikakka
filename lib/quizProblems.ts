@@ -6,7 +6,7 @@ export type QuizQuestion = {
 }
 
 export type ChemExperimentConfig =
-  | { kind: 'balance'; itemA: { label: string; grams: number; color: string }; itemB: { label: string; grams: number; color: string } }
+  | { kind: 'balance'; itemA: { label: string; grams: number; color: string }; itemB: { label: string; grams: number; color: string }; refImage?: string }
   | { kind: 'conserve-weight'; itemA: { label: string; grams: number }; itemB: { label: string; grams: number } }
   | { kind: 'clay-press'; label: string; grams: number }
   | { kind: 'linear-push'; label: string; compareWater?: boolean }
@@ -53,7 +53,7 @@ export const chemStages: ChemStage[] = [
     title: 'ものの重さ',
       curriculum: { code: '理科 3年', unit: 'ものと重さ' },
     learningLine: '木・金属・プラスチックなど、大きさが同じくらいでも重さはちがうんだよ！',
-    experiment: { kind: 'balance', itemA: { label: '木', grams: 10, color: '#c98a4b' }, itemB: { label: '金属', grams: 26, color: '#8b95a1' } },
+    experiment: { kind: 'balance', itemA: { label: '木', grams: 10, color: '#c98a4b' }, itemB: { label: '金属', grams: 26, color: '#8b95a1' }, refImage: '/real/chem-01.png' },
     normal: {
       prompt: '大きさが同じ木と金属があります。はかりに乗せてどちらが重いか比べました。重さは、木のほうが重いでしょうか。金属のほうが重いでしょうか。もしくはどちらも同じでしょうか。',
       choices: [{ id: 'A', text: '木のほうが重い' }, { id: 'B', text: '金属のほうが重い' }, { id: 'C', text: '同じ重さ' }],

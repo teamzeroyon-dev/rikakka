@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ChemExperimentConfig } from '@/lib/quizProblems'
 
 const VB = '0 0 340 220'
@@ -26,56 +26,123 @@ function Instruction({ text }: { text: string }) {
   return <p className="text-center text-sm font-bold leading-relaxed text-muted-foreground">{text}</p>
 }
 
-/** 1. Two-pan balance: itemA is preset on the left pan, itemB is dragged onto the right pan. */
-function BalanceExperiment({ itemA, itemB, onDone }: { itemA: { label: string; grams: number; color: string }; itemB: { label: string; grams: number; color: string }; onDone: () => void }) {
+/** 1. Two-pan balance (天秤): itemA sits on the left dish; drag itemB freely (2D)
+ *  onto the right dish. The heavier dish dips down. */
+function BalanceExperiment({
+  itemA,
+  itemB,
+  refImage,
+  onDone,
+}: {
+  itemA: { label: string; grams: number; color: string }
+  itemB: { label: string; grams: number; color: string }
+  refImage?: string
+  onDone: () => void
+}) {
   const [placed, setPlaced] = useState(false)
-  const svgRef = useRef<SVGSVGElement>(null)
-  const [dragY, setDragY] = useState<number | null>(null)
-  // Heavier pan must dip DOWN. In SVG (y points down) a positive rotate() is
-  // clockwise, which lowers the right pan — so when the right item (itemB) is
-  // heavier the angle must be positive.
-  const tilt = placed ? Math.max(-14, Math.min(14, (itemB.grams - itemA.grams) / Math.max(itemA.grams, itemB.grams) * 14)) : 0
+  const [dropX, setDropX] = useState(0) // -1..1 landing spot across the dish
+  const [drag, setDrag] = useState<{ x: number; y: number } | null>(null)
+  const [imgOk, setImgOk] = useState(true)
 
-  const down = (e: React.PointerEvent) => {
-    if (placed) return
-    safeCapture(e)
-    setDragY(0)
-  }
-  const move = (e: React.PointerEvent) => {
-    if (dragY === null) return
-    const rect = svgRef.current!.getBoundingClientRect()
-    const y = ((e.clientY - rect.top) / rect.height) * 220
-    setDragY(y)
-  }
-  const up = () => {
-    if (dragY !== null && dragY > 90) {
-      setPlaced(true)
-      setTimeout(onDone, 600)
+  useEffect(() => {
+    if (!drag) return
+    const move = (e: PointerEvent) => setDrag({ x: e.clientX, y: e.clientY })
+    const up = (e: PointerEvent) => {
+      const el = document.elementFromPoint(e.clientX, e.clientY)
+      const dish = el ? (el.closest('[data-drop="dish"]') as SVGElement | null) : null
+      if (dish) {
+        const r = dish.getBoundingClientRect()
+        const rel = Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width) * 2 - 1))
+        setDropX(rel)
+        setPlaced(true)
+        setTimeout(onDone, 900)
+      }
+      setDrag(null)
     }
-    setDragY(null)
-  }
+    window.addEventListener('pointermove', move)
+    window.addEventListener('pointerup', up)
+    window.addEventListener('pointercancel', up)
+    return () => {
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerup', up)
+      window.removeEventListener('pointercancel', up)
+    }
+  }, [drag, onDone])
+
+  const leftW = itemA.grams
+  const rightW = placed ? itemB.grams : 0
+  const maxW = Math.max(leftW, itemB.grams, 1)
+  const tilt = Math.max(-12, Math.min(12, ((rightW - leftW) / maxW) * 12))
+  const rad = (tilt * Math.PI) / 180
+  const arm = 116
+  const px = 170
+  const py = 56
+  const chain = 30
+  const lx = px - Math.cos(rad) * arm
+  const ly = py - Math.sin(rad) * arm
+  const rx = px + Math.cos(rad) * arm
+  const ry = py + Math.sin(rad) * arm
+
+  const Dish = ({ cx, cy }: { cx: number; cy: number }) => (
+    <>
+      <line x1={cx} y1={cy - chain} x2={cx - 22} y2={cy} stroke="var(--chem-pan)" strokeWidth={2} />
+      <line x1={cx} y1={cy - chain} x2={cx + 22} y2={cy} stroke="var(--chem-pan)" strokeWidth={2} />
+      <path d={`M ${cx - 34} ${cy} Q ${cx} ${cy + 18} ${cx + 34} ${cy} Z`} fill="var(--chem-pan)" stroke="#8a7a4a" strokeWidth={2} strokeLinejoin="round" />
+    </>
+  )
+  const Weight = ({ cx, cy, color, grams }: { cx: number; cy: number; color: string; grams: number }) => (
+    <g style={{ transition: 'transform 250ms ease-out' }} transform={`translate(${cx},${cy})`}>
+      <rect x={-24} y={-26} width={48} height={26} rx={6} fill={color} stroke="white" strokeWidth={2} />
+      <text x={0} y={-8} textAnchor="middle" fontSize={10} fontWeight={700} fill="white">{grams}g</text>
+    </g>
+  )
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <Instruction text={placed ? `${itemA.label} ${itemA.grams}g／${itemB.label} ${itemB.grams}g` : `${itemB.label}のチップを、右のさらまでドラッグしよう`} />
-      <svg ref={svgRef} viewBox={VB} className="w-full max-w-[380px] select-none" style={{ touchAction: 'none' }} onPointerMove={move} onPointerUp={up} onPointerLeave={up}>
-        <g style={{ transform: `rotate(${tilt}deg)`, transformOrigin: '170px 90px', transition: 'transform 300ms ease-out' }}>
-          <line x1="60" y1="90" x2="280" y2="90" stroke="var(--chem-pan)" strokeWidth={6} strokeLinecap="round" />
-          <rect x={38} y={80} width={44} height={26} rx={6} fill={itemA.color} stroke="white" strokeWidth={2} />
-          <text x={60} y={98} textAnchor="middle" fontSize={10} fontWeight={700} fill="white">{itemA.grams}g</text>
-          {placed && (
-            <>
-              <rect x={238} y={80} width={44} height={26} rx={6} fill={itemB.color} stroke="white" strokeWidth={2} />
-              <text x={260} y={98} textAnchor="middle" fontSize={10} fontWeight={700} fill="white">{itemB.grams}g</text>
-            </>
-          )}
+      {refImage && imgOk && (
+        <img src={refImage} alt="" onError={() => setImgOk(false)} className="max-h-40 w-full rounded-2xl border-2 border-[#e4dfce] object-contain" />
+      )}
+      <Instruction text={placed ? `${itemA.label} ${itemA.grams}g ／ ${itemB.label} ${itemB.grams}g` : `${itemB.label}を みぎの さらに ドラッグしよう`} />
+      <svg viewBox={VB} className="w-full max-w-[380px] select-none" style={{ touchAction: 'none' }}>
+        {/* stand */}
+        <line x1={px} y1={py} x2={px} y2={190} stroke="var(--chem-pan)" strokeWidth={6} />
+        <path d="M138 190 L202 190 L188 202 L152 202 Z" fill="var(--chem-pan)" />
+        {/* beam */}
+        <line x1={lx} y1={ly} x2={rx} y2={ry} stroke="var(--chem-pan)" strokeWidth={6} strokeLinecap="round" style={{ transition: 'all 250ms ease-out' }} />
+        <circle cx={px} cy={py} r={6} fill="var(--chem-pan)" />
+        {/* left dish + itemA */}
+        <g style={{ transition: 'transform 250ms ease-out' }}>
+          <Dish cx={lx} cy={ly + chain} />
+          <Weight cx={lx} cy={ly + chain} color={itemA.color} grams={itemA.grams} />
         </g>
-        <path d="M170 90 L150 130 L190 130 Z" fill="var(--chem-pan)" />
-        <circle cx={170} cy={90} r={5} fill="var(--chem-pan)" />
-        {!placed && (
-          <Chip x={dragY !== null ? 260 : 260} y={dragY !== null ? dragY : 170} label={itemB.label} color={itemB.color} onPointerDown={down} />
+        {/* right dish (drop target) */}
+        <Dish cx={rx} cy={ry + chain} />
+        <ellipse data-drop="dish" cx={rx} cy={ry + chain - 6} rx={46} ry={26} fill="transparent" style={{ pointerEvents: 'all' }} />
+        {placed ? (
+          <Weight cx={rx + dropX * 18} cy={ry + chain} color={itemB.color} grams={itemB.grams} />
+        ) : (
+          <text x={rx} y={ry + chain + 4} textAnchor="middle" fontSize={9} fontWeight={700} fill="#8a7a4a" style={{ pointerEvents: 'none' }}>ここへ</text>
         )}
       </svg>
+      {!placed && (
+        <button
+          onPointerDown={(e) => {
+            e.preventDefault()
+            setDrag({ x: e.clientX, y: e.clientY })
+          }}
+          className="touch-none rounded-2xl border-2 border-[#0e4b69] px-5 py-2.5 text-sm font-black text-white shadow-[0_3px_0_#174d70]"
+          style={{ background: itemB.color, opacity: drag ? 0.3 : 1 }}
+        >
+          {itemB.label} {itemB.grams}g
+        </button>
+      )}
+      {drag && (
+        <div style={{ position: 'fixed', left: drag.x, top: drag.y, transform: 'translate(-50%,-50%) scale(1.1)', pointerEvents: 'none', zIndex: 60 }}>
+          <span className="rounded-2xl border-2 border-[#0e4b69] px-5 py-2.5 text-sm font-black text-white shadow-lg" style={{ background: itemB.color }}>
+            {itemB.label} {itemB.grams}g
+          </span>
+        </div>
+      )}
     </div>
   )
 }
@@ -852,7 +919,7 @@ function MetalAcidExperiment({ solutions, onDone }: { solutions: { label: string
 export function ChemExperiment({ experiment, onDone }: { experiment: ChemExperimentConfig; onDone: () => void }) {
   switch (experiment.kind) {
     case 'balance':
-      return <BalanceExperiment itemA={experiment.itemA} itemB={experiment.itemB} onDone={onDone} />
+      return <BalanceExperiment itemA={experiment.itemA} itemB={experiment.itemB} refImage={experiment.refImage} onDone={onDone} />
     case 'conserve-weight':
       return <ConserveWeightExperiment itemA={experiment.itemA} itemB={experiment.itemB} onDone={onDone} />
     case 'clay-press':
