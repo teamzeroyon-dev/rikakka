@@ -2,16 +2,39 @@
 import { useEffect, useRef, useState } from 'react'
 import { SkipForward, Volume2, VolumeX } from 'lucide-react'
 
-// Fullscreen intro video, shown every time the home map mounts. Tries to play
-// with sound; if the browser blocks autoplay-with-audio it falls back to muted
-// and offers a tap-to-unmute button. A skip button and the video ending both
-// dismiss it.
+// Once per visit: sessionStorage survives in-app navigation (going to a stage
+// and back to the map) and reloads, but clears when the tab/browser closes — so
+// the intro plays on the first home view of a visit and not again.
+const PLAYED_KEY = 'rikakka-intro-played'
+
+// Fullscreen intro video. Tries to play with sound; if the browser blocks
+// autoplay-with-audio it falls back to muted and offers a tap-to-unmute button.
+// A skip button and the video ending both dismiss it.
 export function IntroOverlay() {
-  const [show, setShow] = useState(true)
+  const [show, setShow] = useState(false)
   const [muted, setMuted] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
 
+  // Decide on the client only, so the server renders nothing and there is no
+  // hydration mismatch (and no flash of the overlay on repeat visits).
   useEffect(() => {
+    let played = false
+    try {
+      played = sessionStorage.getItem(PLAYED_KEY) === '1'
+    } catch {
+      // storage blocked (private mode etc.) — fall through and just play it
+    }
+    if (played) return
+    try {
+      sessionStorage.setItem(PLAYED_KEY, '1')
+    } catch {
+      // ignore — worst case the intro plays again next navigation
+    }
+    setShow(true)
+  }, [])
+
+  useEffect(() => {
+    if (!show) return
     const v = videoRef.current
     if (!v) return
     v.play().catch(() => {
@@ -20,7 +43,7 @@ export function IntroOverlay() {
       setMuted(true)
       v.play().catch(() => setShow(false))
     })
-  }, [])
+  }, [show])
 
   if (!show) return null
 

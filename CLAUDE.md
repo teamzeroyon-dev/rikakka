@@ -40,7 +40,7 @@
 - 興味診断 `lib/diagnosis.ts`：**全教科**（てこ/ゴム/化学/地学/生物）のクリア数で職業判定（多数決、僅差タイブレークは順番のみ）。ホーム右上ピルに結果teaser（`CATEGORY_INFO[].nearName`、`THEME_INFO`はエイリアス）。
 - 現実チャレンジ `lib/challenges.ts` + `ChallengeHub`/`ChallengeClient`（`/challenge`, `/challenge/[id]`）：現実シナリオの応用問題。物理（てこ・ゴム）のみ試作。RealWorldScene再利用＋シャッフルMC＋解説。クリアで`recordClear(challenge.id)`＝コイン付与（診断カテゴリには非該当）。ホーム右上にTargetボタンで入口。他教科は未実装。
 
-- イントロ動画：`components/IntroOverlay.tsx`（`public/intro.mp4`）をホーム(`app/page.tsx`)で毎回全画面再生。音付き再生を試し、ブロックされたらミュート再生＋「音を出す」ボタン。スキップ/再生終了で消える。
+- イントロ動画：`components/IntroOverlay.tsx`（`public/intro.mp4`）をホーム(`app/page.tsx`)で全画面再生。**訪問ごとに最初の1回だけ**（`sessionStorage` の `rikakka-intro-played`／アプリ内遷移・リロードでは再生せず、タブを閉じて開き直すと再生）。SSRでは描画せずクライアントで判定（ハイドレーション不整合回避）。音付き再生を試し、ブロックされたらミュート再生＋「音を出す」ボタン。スキップ/再生終了で消える。
 - ランキング報酬：金額は `lib/economy.ts` の `WEEKLY_REWARD_BY_RANK=[50,30,15]`（cron `weekly-payout` と `RankingClient` で共有）。確定は毎週日曜18:00 JST（`lib/week.ts` の `nextWeekBoundary`、API `/api/ranking` が `nextResetAt`/`rewards` を返す）。
 
 ## デバッグモード（全ステージ開放）
