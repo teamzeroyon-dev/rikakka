@@ -37,7 +37,13 @@
 - 物体アイコン `components/ScienceIcons.tsx`：絵文字→手描きSVG（`ObjIcon`）。データは絵文字ラベルのまま、未描画は絵文字フォールバック。
 - ドラッグ系アクティビティは `useDragDrop`（ゴースト追従＋elementFromPointで`[data-drop]`判定）。
 - 社会とのつながり `lib/realWorld.ts` + `components/RealWorldCard.tsx`（学習フェーズに表示。`image`は`/public`に置いた自前画像用スロット）。
-- 興味診断 `lib/diagnosis.ts`：物理のクリア数で職業判定。ホーム右上ピルに結果teaser（`THEME_INFO[].nearName`）。全教科対応は未実装。
+- 興味診断 `lib/diagnosis.ts`：**全教科**（てこ/ゴム/化学/地学/生物）のクリア数で職業判定（多数決、僅差タイブレークは順番のみ）。ホーム右上ピルに結果teaser（`CATEGORY_INFO[].nearName`、`THEME_INFO`はエイリアス）。
+- 現実チャレンジ `lib/challenges.ts` + `ChallengeHub`/`ChallengeClient`（`/challenge`, `/challenge/[id]`）：現実シナリオの応用問題。物理（てこ・ゴム）のみ試作。RealWorldScene再利用＋シャッフルMC＋解説。クリアで`recordClear(challenge.id)`＝コイン付与（診断カテゴリには非該当）。ホーム右上にTargetボタンで入口。他教科は未実装。
+
+## デバッグモード（全ステージ開放）
+- 入り方：ホームを `/?debug=1` で開く（`?debug=0`でOFF）。localStorageに保存（ブラウザ単位）。ONの間はマップ下に赤い「🐞 DEBUG」チップ→タップでOFF。
+- 仕組み：`lib/debug.ts` + `getNodeStatus(...,debug)` がロックを無視して全ノード開放。`WorldMap`がマウント後にURL/LSを読み`MapSugoroku`と`handleNodeTap`へ渡す（SSRはfalse固定でハイドレーション回避）。
+- 注意：未実装ノードは開放しても「もうすぐ/じゅんびちゅう」。ステージ自体は元々 `/chem/[id]` 等の直URLでも到達可（ゲートはマップのみ）。
 
 ## 既知の落とし穴 / 教訓
 - **著作権**：ネットのGIF/画像を落として埋め込まない。自前 or 権利OKのみ（`RealWorldCard.image`）。

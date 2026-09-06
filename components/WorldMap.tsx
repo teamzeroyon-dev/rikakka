@@ -31,6 +31,7 @@ import { getProblem } from '@/lib/problems'
 import { getChemStage } from '@/lib/quizProblems'
 import { getScienceStage } from '@/lib/scienceStages'
 import { computeDiagnosis, THEME_INFO } from '@/lib/diagnosis'
+import { readDebug, writeDebug } from '@/lib/debug'
 
 type Toast = { id: number; message: string }
 type Pointer = { x: number; y: number }
@@ -59,6 +60,23 @@ export function WorldMap() {
   const [toast, setToast] = useState<Toast | null>(null)
   const [lockedNode, setLockedNode] = useState<string | null>(null)
   const [highlightedNodeId, setHighlightedNodeId] = useState<string | null>(null)
+  // Debug unlock. Starts false to match SSR, then reads ?debug= / localStorage
+  // after mount (avoids a hydration mismatch).
+  const [debug, setDebug] = useState(false)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const q = params.get('debug')
+    if (q === '1') writeDebug(true)
+    else if (q === '0') writeDebug(false)
+    setDebug(readDebug())
+    if (q !== null) window.history.replaceState(null, '', window.location.pathname)
+  }, [])
+  const toggleDebug = useCallback(() => {
+    setDebug((d) => {
+      writeDebug(!d)
+      return !d
+    })
+  }, [])
 
   useEffect(() => {
     vbRef.current = vb
@@ -144,7 +162,7 @@ export function WorldMap() {
     (nodeId: string) => {
       const node = getSugorokuNode(nodeId)
       if (!node) return
-      const status = getNodeStatus(node, getPrevNodeInRegion(nodeId), save)
+      const status = getNodeStatus(node, getPrevNodeInRegion(nodeId), save, debug)
       if (status === 'locked') {
         setLockedNode(nodeId)
         return
@@ -171,7 +189,7 @@ export function WorldMap() {
       }
       router.push(`/q/${nodeId}`)
     },
-    [save, router, showToast],
+    [save, router, showToast, debug],
   )
 
   const doubleTapZoom = useCallback(
@@ -349,7 +367,7 @@ export function WorldMap() {
       >
         <rect x={-2000} y={-2000} width={WORLD_W + 4000} height={WORLD_H + 4000} fill="#CFE6EE" />
         <MapIsland k={k} />
-        <MapSugoroku k={k} save={save} highlightedNodeId={highlightedNodeId} />
+        <MapSugoroku k={k} save={save} highlightedNodeId={highlightedNodeId} debug={debug} />
       </svg>
 
       <MapControls
@@ -365,6 +383,17 @@ export function WorldMap() {
       {toast && (
         <div className="pointer-events-none absolute inset-x-0 top-20 z-30 flex justify-center px-4">
           <div className="rounded-full bg-[#174d70] px-5 py-2 text-center text-sm font-black text-white shadow-lg">{toast.message}</div>
+        </div>
+      )}
+
+      {debug && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-3 z-30 flex justify-center px-4">
+          <button
+            onClick={toggleDebug}
+            className="pointer-events-auto rounded-full border-2 border-white bg-[#e2596b] px-4 py-2 text-xs font-black text-white shadow-[0_3px_0_#a4344a]"
+          >
+            🐞 DEBUG ぜんぶ開放中（タップで OFF）
+          </button>
         </div>
       )}
 

@@ -2,19 +2,20 @@ import { GRID_CELL, getPrevNodeInRegion, mapRegions, sugorokuNodes, themeColors,
 import { lerpClamp } from '@/lib/viewbox'
 import { getProblem } from '@/lib/problems'
 import { getChemStage } from '@/lib/quizProblems'
+import { getScienceStage } from '@/lib/scienceStages'
 import { isFaded } from '@/lib/economy'
 import type { Save } from '@/lib/progress'
 
 export type NodeStatus = 'cleared' | 'available' | 'locked' | 'faded'
 
-export function getNodeStatus(node: SugorokuNode, prevNode: SugorokuNode | null, save: Save): NodeStatus {
+export function getNodeStatus(node: SugorokuNode, prevNode: SugorokuNode | null, save: Save, debug = false): NodeStatus {
   const record = save.cleared[node.id]
   if (record) return isFaded(record.lastClearedAt) ? 'faded' : 'cleared'
-  const unlocked = !prevNode || !!save.cleared[prevNode.id]
+  const unlocked = debug || !prevNode || !!save.cleared[prevNode.id]
   return unlocked ? 'available' : 'locked'
 }
 
-export function MapSugoroku({ k, save, highlightedNodeId }: { k: number; save: Save; highlightedNodeId: string | null }) {
+export function MapSugoroku({ k, save, highlightedNodeId, debug = false }: { k: number; save: Save; highlightedNodeId: string | null; debug?: boolean }) {
   const nodeOpacity = lerpClamp(k, 3.0, 3.6)
   const dotOpacity = lerpClamp(k, 1.4, 1.8) * (1 - nodeOpacity)
 
@@ -44,7 +45,7 @@ export function MapSugoroku({ k, save, highlightedNodeId }: { k: number; save: S
         const from = sugorokuNodes[i]
         const to = node
         if (from.regionId !== to.regionId) return null
-        const status = getNodeStatus(to, from, save)
+        const status = getNodeStatus(to, from, save, debug)
         const color = status === 'locked' ? '#B9BFC4' : themeColors[to.theme]
         const roadW = GRID_CELL * 0.42
         return (
@@ -64,8 +65,8 @@ export function MapSugoroku({ k, save, highlightedNodeId }: { k: number; save: S
         )
       })}
       {sugorokuNodes.map((node) => {
-        const status = getNodeStatus(node, getPrevNodeInRegion(node.id), save)
-        const implemented = !!getProblem(node.id) || !!getChemStage(node.id)
+        const status = getNodeStatus(node, getPrevNodeInRegion(node.id), save, debug)
+        const implemented = !!getProblem(node.id) || !!getChemStage(node.id) || !!getScienceStage(node.id)
         const themeColor = themeColors[node.theme]
         const highlighted = highlightedNodeId === node.id
         const dotColor = status === 'locked' ? '#B9BFC4' : themeColor
