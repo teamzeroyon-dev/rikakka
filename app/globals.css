@@ -183,6 +183,21 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-noto-sans-jp), "Hiragino Maru Gothic ProN", "Yu Gothic", system-ui, sans-serif;
+    /* This is a tap/drag game — dragging the cursor over UI text used to paint
+       an annoying blue selection. Disable text selection everywhere except real
+       text fields (see below). */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Keep selection/caret working where the user actually types. */
+  input,
+  textarea,
+  [contenteditable="true"] {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    user-select: text;
   }
   svg text {
     font-family: var(--font-noto-sans-jp), "Hiragino Maru Gothic ProN", "Yu Gothic", system-ui, sans-serif;
