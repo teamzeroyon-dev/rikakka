@@ -112,7 +112,7 @@ export const chigakuStages: ScienceStage[] = [
     regionId: 'chigaku',
     title: '影を動かしてみよう',
     curriculum: { code: '理科 3年', unit: '太陽と地面のようす' },
-    activityHint: '太陽を指で動かして、人や木の影が一番長くなるところを探す。',
+    activityHint: '時計の針で時間を進めて、人や木の影が一番長くなる時こくを探そう。',
     activity: {
       kind: 'clock-scene',
       scene: 'sun-shadow',
@@ -147,7 +147,7 @@ export const chigakuStages: ScienceStage[] = [
     regionId: 'chigaku',
     title: '太陽を動かしてみよう',
     curriculum: { code: '理科 3年', unit: '太陽と地面のようす' },
-    activityHint: '朝→昼→夜と太陽を動かし、午後の太陽の向きを答える。',
+    activityHint: '時計の針で時間を進めて、朝→昼→夕方と太陽の向きが変わるようすを見よう。',
     activity: {
       kind: 'clock-scene',
       scene: 'sun-sky',
@@ -181,7 +181,7 @@ export const chigakuStages: ScienceStage[] = [
     regionId: 'chigaku',
     title: '日向を探そう',
     curriculum: { code: '理科 3年', unit: '太陽と地面のようす' },
-    activityHint: '太陽を動かすと公園の明るい場所が変化する。キャラクターが日向に立てるようにしよう。',
+    activityHint: '時計の針で時間を進めると、公園の明るい場所が変わる。キャラクターが日向に立てるようにしよう。',
     activity: {
       kind: 'clock-scene',
       scene: 'sunny-spot',
