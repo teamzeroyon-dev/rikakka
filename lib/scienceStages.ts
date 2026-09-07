@@ -48,6 +48,23 @@ export type ActivityConfig =
       stops: { id: string; x: number; y: number; emoji: string; label: string }[]
     }
   | {
+      kind: 'grow-plant'
+      goalHint: string
+      /** Days the day-flip calendar tears off after each watering. */
+      stepDays: number
+      /** Date shown on the calendar before the first watering. */
+      startDate: { month: number; day: number }
+      /** phases[0] is the starting look; each watering advances one phase. */
+      phases: { label: string }[]
+    }
+  | {
+      kind: 'shake-bush'
+      goalHint: string
+      /** Tapping the bush shakes one bug loose at a time, in this order.
+       *  x/y are where the bug settles on the board, in board percent. */
+      bugs: { id: string; emoji: string; label: string; x: number; y: number }[]
+    }
+  | {
       kind: 'dig-layers'
       goalHint: string
       question: string
@@ -692,16 +709,17 @@ export const seibutsuStages: ScienceStage[] = [
     regionId: 'seibutsu',
     title: '植物を育てよう',
     curriculum: { code: '理科 3年', unit: '身の回りの生物' },
-    activityHint: '植物とじょうろを画面に配置。じょうろをドラッグして水やりしよう。',
+    activityHint: 'じょうろを 芽に ドラッグして 水を あげよう。水を あげるたびに カレンダーが めくれて、植物が そだつよ。',
     activity: {
-      kind: 'drag-path',
-      board: 'garden',
-      goalHint: 'じょうろを はこんで、ぜんぶの しょくぶつに 水を あげよう',
-      mover: { emoji: '🪣', label: 'じょうろ' },
-      stops: [
-        { id: 'p1', x: 24, y: 62, emoji: '🌱', label: 'ふたば' },
-        { id: 'p2', x: 50, y: 58, emoji: '🌿', label: 'わかば' },
-        { id: 'p3', x: 76, y: 62, emoji: '🌼', label: 'つぼみ' },
+      kind: 'grow-plant',
+      goalHint: 'じょうろを めに はこんで 水を あげよう',
+      stepDays: 14,
+      startDate: { month: 5, day: 1 },
+      phases: [
+        { label: 'めが でた' },
+        { label: 'はっぱが ふえた' },
+        { label: 'つぼみが ついた' },
+        { label: '花が さいた' },
       ],
     },
     learningLine: '植物は水などを使って大きく育つんだよ！',
@@ -728,18 +746,14 @@ export const seibutsuStages: ScienceStage[] = [
     regionId: 'seibutsu',
     title: '虫を見つけよう',
     curriculum: { code: '理科 3年', unit: '昆虫と植物' },
-    activityHint: '草や葉っぱを動かして、かくれている虫を探そう。',
+    activityHint: '茂みを タップして わさわさ ゆらすと、かくれていた 虫が とび出してくるよ。',
     activity: {
-      kind: 'pick-spot',
-      scene: 'park-bugs',
-      goalHint: 'くさや はっぱを タップして、むしを 3びき 見つけよう',
-      needed: 3,
-      spots: [
-        { id: 'b1', x: 18, y: 58, emoji: '🐞', label: 'テントウムシ', correct: true },
-        { id: 'b2', x: 40, y: 72, emoji: '🌿', label: 'くさだけ', correct: false },
-        { id: 'b3', x: 58, y: 48, emoji: '🦋', label: 'モンシロチョウ', correct: true },
-        { id: 'b4', x: 78, y: 66, emoji: '🦗', label: 'バッタ', correct: true },
-        { id: 'b5', x: 66, y: 82, emoji: '🍃', label: 'はっぱだけ', correct: false },
+      kind: 'shake-bush',
+      goalHint: 'しげみを タップして ゆらし、むしを 3びき 見つけよう',
+      bugs: [
+        { id: 'b1', emoji: '🐞', label: 'テントウムシ', x: 20, y: 26 },
+        { id: 'b2', emoji: '🦋', label: 'モンシロチョウ', x: 50, y: 14 },
+        { id: 'b3', emoji: '🦗', label: 'バッタ', x: 80, y: 30 },
       ],
     },
     learningLine: '虫はいろいろな場所にいて、それぞれ違った体のつくりをしているんだよ！',

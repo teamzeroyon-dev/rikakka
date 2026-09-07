@@ -41,7 +41,7 @@
 - 現実チャレンジ `lib/challenges.ts` + `ChallengeHub`/`ChallengeClient`（`/challenge`, `/challenge/[id]`）：現実シナリオの応用問題。物理（てこ・ゴム）のみ試作。RealWorldScene再利用＋シャッフルMC＋解説。クリアで`recordClear(challenge.id)`＝コイン付与（診断カテゴリには非該当）。ホーム右上にTargetボタンで入口。他教科は未実装。
 
 - イントロ動画：`components/IntroOverlay.tsx`（`public/intro.mp4`）をホーム(`app/page.tsx`)で全画面再生。**訪問ごとに最初の1回だけ**（`sessionStorage` の `rikakka-intro-played`／アプリ内遷移・リロードでは再生せず、タブを閉じて開き直すと再生）。SSRでは描画せずクライアントで判定（ハイドレーション不整合回避）。音付き再生を試し、ブロックされたらミュート再生＋「音を出す」ボタン。スキップ/再生終了で消える。
-- ランキング報酬：金額は `lib/economy.ts` の `WEEKLY_REWARD_BY_RANK=[50,30,15]`（cron `weekly-payout` と `RankingClient` で共有）。確定は毎週日曜18:00 JST（`lib/week.ts` の `nextWeekBoundary`、API `/api/ranking` が `nextResetAt`/`rewards` を返す）。
+- ランキング報酬：金額は `lib/economy.ts` の `WEEKLY_REWARD_BY_RANK=[250,200,150,100,50]`（配列長＝報酬対象人数。cronは`.limit(length)`で自動追従）（cron `weekly-payout` と `RankingClient` で共有）。確定は毎週日曜18:00 JST（`lib/week.ts` の `nextWeekBoundary`、API `/api/ranking` が `nextResetAt`/`rewards` を返す）。
 
 ## デバッグモード（全ステージ開放）
 - 入り方：ホームを `/?debug=1` で開く（`?debug=0`でOFF）。localStorageに保存（ブラウザ単位）。ONの間はマップ下に赤い「🐞 DEBUG」チップ→タップでOFF。

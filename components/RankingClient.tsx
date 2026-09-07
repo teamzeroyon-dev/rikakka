@@ -55,7 +55,7 @@ function Countdown({ target }: { target: string }) {
 
 export function RankingClient() {
   const { data } = useSWR<Board>('/api/ranking', fetcher, { refreshInterval: 15_000 })
-  const rewards = data?.rewards ?? [50, 30, 15]
+  const rewards = data?.rewards ?? [250, 200, 150, 100, 50]
 
   return (
     <main className="min-h-[var(--stage-h)] px-4 py-5 text-foreground" style={{ background: 'linear-gradient(#fff4d9,#ffe4bd)' }}>
@@ -70,7 +70,7 @@ export function RankingClient() {
         </header>
 
         <p className="rounded-2xl bg-white/85 p-4 text-sm font-bold leading-6 text-[#5f5a52] shadow-sm">
-          アプリを つかった 時間の ランキングだよ。毎週 日曜 午後6時に こうしんされて、上位3人に コインが プレゼント！
+          アプリを つかった 時間の ランキングだよ。毎週 日曜 午後6時に こうしんされて、上位{rewards.length}人に コインが プレゼント！
         </p>
 
         {data?.nextResetAt && <Countdown target={data.nextResetAt} />}

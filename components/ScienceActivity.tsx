@@ -759,6 +759,371 @@ function DigLayersActivity({ config, onDone }: { config: Extract<ActivityConfig,
   )
 }
 
+/* ------------------------------------------------- seibutsu-01: grow a plant */
+
+// A watering can drawn properly (the emoji fallback used to show a bucket).
+function WateringCanArt({ pouring }: { pouring?: boolean }) {
+  return (
+    <svg viewBox="0 0 120 92" className="h-full w-full">
+      <path d="M34 46 L10 24 L2 32 L26 58 Z" fill="#4E8FC5" stroke="#0e4b69" strokeWidth={3} strokeLinejoin="round" />
+      <ellipse cx={8} cy={27} rx={9} ry={6} transform="rotate(-42 8 27)" fill="#6aa6d6" stroke="#0e4b69" strokeWidth={3} />
+      <path d="M46 32 Q62 8 82 32" fill="none" stroke="#0e4b69" strokeWidth={5} strokeLinecap="round" />
+      <rect x={30} y={32} width={58} height={44} rx={11} fill="#4E8FC5" stroke="#0e4b69" strokeWidth={3} />
+      <ellipse cx={59} cy={32} rx={29} ry={8} fill="#6aa6d6" stroke="#0e4b69" strokeWidth={3} />
+      <rect x={38} y={44} width={16} height={20} rx={5} fill="#8ec4e6" opacity={0.7} />
+      {pouring && <circle cx={6} cy={34} r={3} fill="#aee0ef" />}
+    </svg>
+  )
+}
+
+function PlantArt({ phase }: { phase: number }) {
+  const topY = [110, 92, 70, 62][Math.min(phase, 3)]
+  const leaf = (cx: number, cy: number, dir: number, scale = 1) => (
+    <ellipse
+      cx={cx}
+      cy={cy}
+      rx={14 * scale}
+      ry={7 * scale}
+      transform={`rotate(${-26 * dir} ${cx} ${cy})`}
+      fill="#6fc46f"
+      stroke="#3d8a3d"
+      strokeWidth={2}
+    />
+  )
+  return (
+    <svg viewBox="0 0 140 150" className="h-full w-full">
+      <ellipse cx={70} cy={136} rx={46} ry={13} fill="#7d5c39" />
+      <ellipse cx={70} cy={132} rx={39} ry={10} fill="#a5814f" />
+      <path
+        d={`M70 132 L70 ${topY}`}
+        stroke="#3d8a3d"
+        strokeWidth={5}
+        strokeLinecap="round"
+        fill="none"
+        style={{ transition: 'all 480ms ease-out' }}
+      />
+      {leaf(55, 116, 1)}
+      {leaf(85, 116, -1)}
+      {phase >= 1 && (
+        <g className="animate-chem-fade-in">
+          {leaf(52, 100, 1, 1.1)}
+          {leaf(88, 100, -1, 1.1)}
+        </g>
+      )}
+      {phase >= 2 && (
+        <g className="animate-chem-fade-in">
+          {leaf(50, 84, 1, 1.2)}
+          {leaf(90, 84, -1, 1.2)}
+        </g>
+      )}
+      {phase === 2 && (
+        <g className="animate-chem-fade-in">
+          <ellipse cx={70} cy={62} rx={9} ry={14} fill="#f0a6bd" stroke="#c4657f" strokeWidth={2} />
+          <path d="M62 70 Q70 78 78 70" fill="#6fc46f" stroke="#3d8a3d" strokeWidth={2} />
+        </g>
+      )}
+      {phase >= 3 && (
+        <g className="animate-chem-fade-in">
+          {[0, 60, 120, 180, 240, 300].map((a) => (
+            <ellipse
+              key={a}
+              cx={70}
+              cy={40}
+              rx={8}
+              ry={13}
+              transform={`rotate(${a} 70 54)`}
+              fill="#f4879f"
+              stroke="#c4657f"
+              strokeWidth={2}
+            />
+          ))}
+          <circle cx={70} cy={54} r={8} fill="#f7c94b" stroke="#c99a1e" strokeWidth={2} />
+        </g>
+      )}
+    </svg>
+  )
+}
+
+function addDays(month: number, day: number, add: number) {
+  // Fixed year so the server and the client always render the same date.
+  const d = new Date(2025, month - 1, day)
+  d.setDate(d.getDate() + add)
+  return { month: d.getMonth() + 1, day: d.getDate() }
+}
+
+function DayCalendar({ month, day, tearing, tearMonth, tearDay }: { month: number; day: number; tearing: boolean; tearMonth: number; tearDay: number }) {
+  const sheet = (m: number, d: number) => (
+    <div className="rounded-b-2xl border-2 border-t-0 border-[#e4dfce] bg-white px-3 pb-2 pt-1 text-center shadow-[0_3px_0_rgba(14,75,105,0.15)]">
+      <span className="block text-[10px] font-black text-[#8a8478]">{m}月</span>
+      <span className="block text-3xl font-black leading-none text-[#3d3a38]">{d}</span>
+    </div>
+  )
+  return (
+    <div className="relative w-[74px]">
+      <div className="rounded-t-2xl bg-[#d94f4f] py-1 text-center text-[10px] font-black text-white">カレンダー</div>
+      {sheet(month, day)}
+      {tearing && <div className="animate-calendar-tear absolute inset-x-0 top-[22px]">{sheet(tearMonth, tearDay)}</div>}
+    </div>
+  )
+}
+
+function GrowPlantActivity({ config, onDone }: { config: Extract<ActivityConfig, { kind: 'grow-plant' }>; onDone: () => void }) {
+  const last = config.phases.length - 1
+  const [phase, setPhase] = useState(0)
+  const [days, setDays] = useState(0)
+  const [drag, setDrag] = useState<{ x: number; y: number } | null>(null)
+  const [over, setOver] = useState(false)
+  const [showering, setShowering] = useState(false)
+  const [tearing, setTearing] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([])
+
+  useEffect(() => {
+    const list = timers.current
+    return () => list.forEach(clearTimeout)
+  }, [])
+
+  const done = phase >= last
+  const pouring = showering || (!!drag && over && !busy && !done)
+
+  // Kept in a ref so the pointer effect below only depends on `drag`.
+  const waterRef = useRef(() => {})
+  waterRef.current = () => {
+    if (busy || done) return
+    setBusy(true)
+    setShowering(true)
+    // 1. the can pours for a second …
+    timers.current.push(
+      setTimeout(() => {
+        setShowering(false)
+        // 2. … then the calendar tears off two weeks …
+        setTearing(true)
+        timers.current.push(
+          setTimeout(() => {
+            setTearing(false)
+            setDays((d) => d + config.stepDays)
+            // 3. … and the plant reaches its next phase.
+            setPhase((p) => Math.min(last, p + 1))
+            setBusy(false)
+          }, 620),
+        )
+      }, 1000),
+    )
+  }
+
+  useEffect(() => {
+    if (!drag) return
+    const move = (e: PointerEvent) => {
+      setDrag({ x: e.clientX, y: e.clientY })
+      const el = document.elementFromPoint(e.clientX, e.clientY)
+      setOver(!!(el && el.closest('[data-drop="plant"]')))
+    }
+    const up = (e: PointerEvent) => {
+      const el = document.elementFromPoint(e.clientX, e.clientY)
+      const hit = !!(el && el.closest('[data-drop="plant"]'))
+      setDrag(null)
+      setOver(false)
+      if (hit) waterRef.current()
+    }
+    window.addEventListener('pointermove', move)
+    window.addEventListener('pointerup', up)
+    window.addEventListener('pointercancel', up)
+    return () => {
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerup', up)
+      window.removeEventListener('pointercancel', up)
+    }
+  }, [drag])
+
+  const today = addDays(config.startDate.month, config.startDate.day, days)
+  const nextDate = addDays(config.startDate.month, config.startDate.day, days + config.stepDays)
+  const shown = tearing ? nextDate : today
+
+  return (
+    <div className="flex flex-col gap-3">
+      {done ? <DoneBanner text={`${config.phases[last].label}！`} /> : <Hint>{config.goalHint}</Hint>}
+
+      <Board sky="linear-gradient(#dff0fb,#eaf7dd)" ground="linear-gradient(#8fbf6b,#6fa054)">
+        <div className="absolute right-[4%] top-[6%] flex flex-col items-center gap-1">
+          <DayCalendar month={shown.month} day={shown.day} tearing={tearing} tearMonth={today.month} tearDay={today.day} />
+          {days > 0 && <span className="rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-black text-[#174d70]">{days}日目</span>}
+        </div>
+
+        <div
+          data-drop="plant"
+          className="absolute bottom-[10%] left-[6%] flex h-[74%] w-[46%] items-end justify-center rounded-3xl"
+          style={{ background: over && !busy && !done ? 'rgba(255,255,255,0.35)' : 'transparent', transition: 'background 150ms' }}
+        >
+          <div className="relative h-full w-full">
+            <div className="absolute inset-x-0 bottom-0 top-[16%]">
+              <PlantArt phase={phase} />
+            </div>
+            {pouring && (
+              <>
+                <div className="pointer-events-none absolute left-[-8%] top-[-6%] w-[54%]">
+                  <WateringCanArt pouring />
+                </div>
+                <div className="pointer-events-none absolute left-[24%] top-[16%] flex gap-1.5">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <span
+                      key={i}
+                      className="animate-water-drop block h-2.5 w-1.5 rounded-full bg-[#4E8FC5]"
+                      style={{ animationDelay: `${i * 90}ms` }}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        <span className="absolute bottom-[3%] left-[6%] rounded-full bg-white/90 px-3 py-1 text-[11px] font-black text-[#3d8a3d]">
+          {config.phases[phase].label}
+        </span>
+      </Board>
+
+      {done ? (
+        <NextButton onDone={onDone} />
+      ) : (
+        <div className="flex items-center justify-center gap-3">
+          <button
+            onPointerDown={(e) => {
+              if (busy) return
+              e.preventDefault()
+              setDrag({ x: e.clientX, y: e.clientY })
+            }}
+            disabled={busy}
+            aria-label="じょうろ"
+            className="flex h-16 w-20 touch-none items-center justify-center rounded-2xl border-2 border-[#0e4b69] bg-[#fdf9ef] p-1.5 shadow-[0_3px_0_#174d70] disabled:opacity-50"
+            style={{ opacity: drag ? 0.3 : undefined }}
+          >
+            <WateringCanArt />
+          </button>
+          <span className="text-xs font-black text-[#8a8478]">じょうろを めに ドラッグ</span>
+        </div>
+      )}
+
+      {drag && (
+        <div style={{ position: 'fixed', left: drag.x, top: drag.y, transform: 'translate(-50%,-50%)', pointerEvents: 'none', zIndex: 60 }}>
+          <div className="h-16 w-20">
+            <WateringCanArt />
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ------------------------------------------------ seibutsu-02: shake a bush */
+
+function BushArt() {
+  return (
+    <svg viewBox="0 0 220 150" className="h-full w-full">
+      <ellipse cx={110} cy={132} rx={96} ry={16} fill="#4f7d3f" opacity={0.35} />
+      <circle cx={58} cy={92} r={38} fill="#4f9b4a" />
+      <circle cx={162} cy={92} r={38} fill="#4f9b4a" />
+      <circle cx={110} cy={72} r={48} fill="#5FB85F" />
+      <circle cx={80} cy={104} r={34} fill="#6fc46f" />
+      <circle cx={142} cy={104} r={34} fill="#6fc46f" />
+      <circle cx={110} cy={112} r={30} fill="#7bd07b" />
+      <ellipse cx={92} cy={58} rx={13} ry={7} transform="rotate(-30 92 58)" fill="#8ade8a" />
+      <ellipse cx={134} cy={70} rx={13} ry={7} transform="rotate(24 134 70)" fill="#8ade8a" />
+      <ellipse cx={62} cy={82} rx={11} ry={6} transform="rotate(-16 62 82)" fill="#8ade8a" />
+      <rect x={104} y={122} width={12} height={16} rx={3} fill="#7d5c39" />
+    </svg>
+  )
+}
+
+function ShakeBushActivity({ config, onDone }: { config: Extract<ActivityConfig, { kind: 'shake-bush' }>; onDone: () => void }) {
+  const [out, setOut] = useState<{ id: string; landed: boolean }[]>([])
+  const [shaking, setShaking] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([])
+
+  useEffect(() => {
+    const list = timers.current
+    return () => list.forEach(clearTimeout)
+  }, [])
+
+  const done = out.length === config.bugs.length
+
+  const tap = () => {
+    if (busy || done) return
+    const next = config.bugs[out.length]
+    setBusy(true)
+    setShaking(true)
+    timers.current.push(
+      setTimeout(() => {
+        setShaking(false)
+        // The bug appears at the bush, then transitions out to its spot.
+        setOut((o) => [...o, { id: next.id, landed: false }])
+        timers.current.push(
+          setTimeout(() => {
+            setOut((o) => o.map((b) => (b.id === next.id ? { ...b, landed: true } : b)))
+            timers.current.push(setTimeout(() => setBusy(false), 820))
+          }, 40),
+        )
+      }, 520),
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      {done ? <DoneBanner text={`むしを ${config.bugs.length}びき 見つけた！`} /> : <Hint>{config.goalHint}</Hint>}
+
+      <Board sky="linear-gradient(#d9f0c4,#eaf7dd)" ground="linear-gradient(#8fbf6b,#6fa054)">
+        <span className="absolute left-[4%] top-[4%] rounded-full bg-white/90 px-3 py-1 text-[11px] font-black text-[#3d8a3d]">
+          みつけた {out.length} / {config.bugs.length}
+        </span>
+
+        {out.map((b) => {
+          const bug = config.bugs.find((x) => x.id === b.id)
+          if (!bug) return null
+          return (
+            <div
+              key={b.id}
+              className="pointer-events-none absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+              style={{
+                left: `${b.landed ? bug.x : 50}%`,
+                top: `${b.landed ? bug.y : 56}%`,
+                transition: 'left 800ms cubic-bezier(.2,.75,.3,1), top 800ms cubic-bezier(.2,.75,.3,1)',
+              }}
+            >
+              <div className="animate-bug-flutter">
+                <ObjIcon emoji={bug.emoji} label={bug.label} size={38} />
+              </div>
+              {b.landed && (
+                <span className="animate-chem-fade-in mt-0.5 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-black text-[#3d3a38]">
+                  {bug.label}
+                </span>
+              )}
+            </div>
+          )
+        })}
+
+        <button
+          onClick={tap}
+          disabled={busy || done}
+          aria-label="しげみを ゆらす"
+          className="absolute bottom-[6%] left-1/2 h-[64%] w-[62%] -translate-x-1/2 disabled:cursor-default"
+        >
+          <div className={shaking ? 'animate-bush-shake h-full w-full' : 'h-full w-full'}>
+            <BushArt />
+          </div>
+        </button>
+
+        {!done && !busy && (
+          <span className="pointer-events-none absolute bottom-[2%] left-1/2 -translate-x-1/2 rounded-full bg-white/90 px-3 py-1 text-[11px] font-black text-[#174d70]">
+            タップ！
+          </span>
+        )}
+      </Board>
+
+      {done && <NextButton onDone={onDone} />}
+    </div>
+  )
+}
+
 /* ------------------------------------------------------------------- export */
 
 export function ScienceActivity({ activity, onDone }: { activity: ActivityConfig; onDone: () => void }) {
@@ -778,6 +1143,10 @@ export function ScienceActivity({ activity, onDone }: { activity: ActivityConfig
         return <MatchPairsActivity key={nonce} config={activity} onDone={onDone} />
       case 'drag-path':
         return <DragPathActivity key={nonce} config={activity} onDone={onDone} />
+      case 'grow-plant':
+        return <GrowPlantActivity key={nonce} config={activity} onDone={onDone} />
+      case 'shake-bush':
+        return <ShakeBushActivity key={nonce} config={activity} onDone={onDone} />
       case 'dig-layers':
         return <DigLayersActivity key={nonce} config={activity} onDone={onDone} />
     }

@@ -7,4 +7,4 @@ export const isFaded = (last: number) => Date.now() - last > 14 * 24 * 60 * 60 *
 export const isNeglected = (last: number | undefined) => !last || Date.now() - last > 7 * 24 * 60 * 60 * 1000
 
 // Coins paid to the weekly usage-time ranking, by finishing rank (1st/2nd/3rd).
-export const WEEKLY_REWARD_BY_RANK = [50, 30, 15]
+export const WEEKLY_REWARD_BY_RANK = [250, 200, 150, 100, 50]
