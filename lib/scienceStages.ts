@@ -48,6 +48,19 @@ export type ActivityConfig =
       stops: { id: string; x: number; y: number; emoji: string; label: string }[]
     }
   | {
+      kind: 'clock-scene'
+      scene: 'sun-shadow' | 'sun-sky' | 'sunny-spot'
+      steps: number
+      /** Where the hand starts; must not already satisfy `goal`. Defaults to 0. */
+      start?: number
+      goal: number[]
+      goalHint: string
+      /** Clock hour at step 0 and at the last step (24h). The hand winds
+       *  forward across exactly this span, so it never wraps ambiguously. */
+      startHour: number
+      endHour: number
+    }
+  | {
       kind: 'grow-plant'
       goalHint: string
       /** Days the day-flip calendar tears off after each watering. */
@@ -101,13 +114,14 @@ export const chigakuStages: ScienceStage[] = [
     curriculum: { code: '理科 3年', unit: '太陽と地面のようす' },
     activityHint: '太陽を指で動かして、人や木の影が一番長くなるところを探す。',
     activity: {
-      kind: 'slider-scene',
+      kind: 'clock-scene',
       scene: 'sun-shadow',
-      control: 'たいようを うごかす',
       steps: 7,
       start: 3,
       goal: [0, 6],
-      goalHint: 'かげが いちばん ながく なる ところを さがそう',
+      goalHint: '時計の はりを まわして、かげが いちばん ながく なる 時こくを さがそう',
+      startHour: 6,
+      endHour: 18,
     },
     learningLine: '太陽の場所が変わると、陰の向きや長さも変わるんだよ！',
     normal: {
@@ -135,12 +149,13 @@ export const chigakuStages: ScienceStage[] = [
     curriculum: { code: '理科 3年', unit: '太陽と地面のようす' },
     activityHint: '朝→昼→夜と太陽を動かし、午後の太陽の向きを答える。',
     activity: {
-      kind: 'slider-scene',
+      kind: 'clock-scene',
       scene: 'sun-sky',
-      control: 'じかんを すすめる',
       steps: 5,
       goal: [3],
-      goalHint: 'ごごの たいようの ばしょまで すすめよう',
+      goalHint: '時計の はりを まわして、ごごの たいようの ばしょまで すすめよう',
+      startHour: 6,
+      endHour: 18,
     },
     learningLine: '太陽は時間がたつと、動いているように見えるんだよ！',
     normal: {
@@ -168,12 +183,13 @@ export const chigakuStages: ScienceStage[] = [
     curriculum: { code: '理科 3年', unit: '太陽と地面のようす' },
     activityHint: '太陽を動かすと公園の明るい場所が変化する。キャラクターが日向に立てるようにしよう。',
     activity: {
-      kind: 'slider-scene',
+      kind: 'clock-scene',
       scene: 'sunny-spot',
-      control: 'たいようを うごかす',
       steps: 7,
       goal: [3],
-      goalHint: 'ひなたに 立てるように たいようを うごかそう',
+      goalHint: '時計の はりを まわして、ひなたに 立てる 時こくに しよう',
+      startHour: 6,
+      endHour: 18,
     },
     learningLine: '太陽の場所によって、日なたになる場所と日かげになる場所が変わるんだよ！',
     normal: {

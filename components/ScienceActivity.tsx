@@ -304,6 +304,125 @@ function SliderActivity({ config, onDone }: { config: Extract<ActivityConfig, { 
   )
 }
 
+/* ------------------------------------------------------- drag the clock hand */
+// Same scenes as the slider, but the child winds a real clock forward. The hour
+// span (e.g. 6時→18時) maps onto exactly one turn of the dial, and the hand is
+// clamped at both ends, so morning and afternoon can never be confused.
+
+function jpTime(h: number) {
+  const n = Math.round(h)
+  if (n === 12) return 'ひる 12じ'
+  return n < 12 ? `ごぜん ${n}じ` : `ごご ${n - 12}じ`
+}
+
+function ClockSceneActivity({ config, onDone }: { config: Extract<ActivityConfig, { kind: 'clock-scene' }>; onDone: () => void }) {
+  const span = config.endHour - config.startHour
+  const totalDeg = span * 30
+  const stepDeg = totalDeg / (config.steps - 1)
+  const [rot, setRot] = useState((config.start ?? 0) * stepDeg)
+  const [dragging, setDragging] = useState(false)
+  const [reached, setReached] = useState(false)
+  const svgRef = useRef<SVGSVGElement>(null)
+  const rotRef = useRef(rot)
+  rotRef.current = rot
+
+  const value = Math.max(0, Math.min(config.steps - 1, Math.round(rot / stepDeg)))
+  const hour = config.startHour + (value * span) / (config.steps - 1)
+  const handDeg = (config.startHour * 30 + rot) % 360
+
+  useEffect(() => {
+    if (config.goal.includes(value)) setReached(true)
+  }, [value, config.goal])
+
+  // Point the hand at the pointer, taking the SHORTEST way round from where it
+  // is now and clamping to the day's span — that is what stops it wrapping.
+  const aim = (clientX: number, clientY: number) => {
+    const el = svgRef.current
+    if (!el) return
+    const r = el.getBoundingClientRect()
+    if (!r.width) return
+    const cx = r.left + r.width / 2
+    const cy = r.top + r.height / 2
+    const a = (Math.atan2(clientX - cx, cy - clientY) * 180) / Math.PI
+    const target = (((a - config.startHour * 30) % 360) + 360) % 360
+    const cur = rotRef.current
+    const delta = ((((target - cur) % 360) + 540) % 360) - 180
+    setRot(Math.max(0, Math.min(totalDeg, cur + delta)))
+  }
+
+  useEffect(() => {
+    if (!dragging) return
+    const move = (e: PointerEvent) => aim(e.clientX, e.clientY)
+    const up = () => {
+      setDragging(false)
+      // settle on the nearest hour step
+      setRot((v) => Math.max(0, Math.min(totalDeg, Math.round(v / stepDeg) * stepDeg)))
+    }
+    window.addEventListener('pointermove', move)
+    window.addEventListener('pointerup', up)
+    window.addEventListener('pointercancel', up)
+    return () => {
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerup', up)
+      window.removeEventListener('pointercancel', up)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dragging])
+
+  return (
+    <div className="flex flex-col gap-3">
+      <SliderScene scene={config.scene} value={value} steps={config.steps} />
+
+      <div className="flex items-center justify-center gap-4">
+        <svg
+          ref={svgRef}
+          viewBox="0 0 200 200"
+          className="w-[150px] shrink-0 cursor-pointer touch-none"
+          onPointerDown={(e) => {
+            e.preventDefault()
+            setDragging(true)
+            aim(e.clientX, e.clientY)
+          }}
+        >
+          <circle cx={100} cy={100} r={94} fill="#0e4b69" />
+          <circle cx={100} cy={100} r={86} fill="#fdf9ef" />
+          {Array.from({ length: 12 }).map((_, k) => {
+            const th = ((k * 30) * Math.PI) / 180
+            const tx = 100 + 74 * Math.sin(th)
+            const ty = 100 - 74 * Math.cos(th)
+            const nx = 100 + 62 * Math.sin(th)
+            const ny = 100 - 62 * Math.cos(th)
+            return (
+              <g key={k}>
+                <circle cx={tx} cy={ty} r={2.5} fill="#7a8b99" />
+                <text x={nx} y={ny + 6} textAnchor="middle" fontSize={17} fontWeight={900} fill="#3d3a38">
+                  {k === 0 ? 12 : k}
+                </text>
+              </g>
+            )
+          })}
+          <line x1={100} y1={100} x2={100} y2={30} stroke="#7a8b99" strokeWidth={5} strokeLinecap="round" />
+          <g transform={`rotate(${handDeg} 100 100)`} style={{ transition: dragging ? 'none' : 'transform 220ms ease-out' }}>
+            <line x1={100} y1={100} x2={100} y2={52} stroke="#e2596b" strokeWidth={10} strokeLinecap="round" />
+            <circle cx={100} cy={52} r={13} fill="#e2596b" stroke="#fff" strokeWidth={3} />
+          </g>
+          <circle cx={100} cy={100} r={7} fill="#0e4b69" />
+        </svg>
+
+        <div className="flex flex-col items-center gap-1">
+          <span className="rounded-2xl border-2 border-[#0e4b69] bg-[#f7c94b] px-4 py-2 text-lg font-black text-[#3d3a38] shadow-[0_3px_0_#174d70]">
+            {jpTime(hour)}
+          </span>
+          <span className="text-xs font-black text-[#8a8478]">あかい はりを まわそう</span>
+        </div>
+      </div>
+
+      {reached ? <DoneBanner text="できた！" /> : <Hint>{config.goalHint}</Hint>}
+      {reached && <NextButton onDone={onDone} />}
+    </div>
+  )
+}
+
 /* -------------------------------------------------------------- pick a spot */
 // A find/choose activity (tap the right things) — the spec's "さがそう / えらぼう".
 
@@ -1133,6 +1252,8 @@ export function ScienceActivity({ activity, onDone }: { activity: ActivityConfig
     switch (activity.kind) {
       case 'slider-scene':
         return <SliderActivity key={nonce} config={activity} onDone={onDone} />
+      case 'clock-scene':
+        return <ClockSceneActivity key={nonce} config={activity} onDone={onDone} />
       case 'pick-spot':
         return <PickSpotActivity key={nonce} config={activity} onDone={onDone} />
       case 'order-cards':

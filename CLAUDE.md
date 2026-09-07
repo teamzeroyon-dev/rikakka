@@ -40,6 +40,7 @@
 - 興味診断 `lib/diagnosis.ts`：**全教科**（てこ/ゴム/化学/地学/生物）のクリア数で職業判定（多数決、僅差タイブレークは順番のみ）。ホーム右上ピルに結果teaser（`CATEGORY_INFO[].nearName`、`THEME_INFO`はエイリアス）。
 - 現実チャレンジ `lib/challenges.ts` + `ChallengeHub`/`ChallengeClient`（`/challenge`, `/challenge/[id]`）：現実シナリオの応用問題。物理（てこ・ゴム）のみ試作。RealWorldScene再利用＋シャッフルMC＋解説。クリアで`recordClear(challenge.id)`＝コイン付与（診断カテゴリには非該当）。ホーム右上にTargetボタンで入口。他教科は未実装。
 
+- 地学/生物のアクティビティ種別は `lib/scienceStages.ts` の `ActivityConfig`。追加済み: `clock-scene`（時計の針ドラッグ。chigaku-01/02/03。`startHour`→`endHour`＝12hをダイヤル1周に対応させ、最短回転＋両端クランプで午前/午後が混ざらない）／`grow-plant`（seibutsu-01。じょうろドラッグ→1秒シャワー→日めくり2週間→成長×3）／`shake-bush`（seibutsu-02。茂みタップ→わさわさ→虫が飛び出す）。
 - イントロ動画：`components/IntroOverlay.tsx`（`public/intro.mp4`）をホーム(`app/page.tsx`)で全画面再生。**訪問ごとに最初の1回だけ**（`sessionStorage` の `rikakka-intro-played`／アプリ内遷移・リロードでは再生せず、タブを閉じて開き直すと再生）。SSRでは描画せずクライアントで判定（ハイドレーション不整合回避）。音付き再生を試し、ブロックされたらミュート再生＋「音を出す」ボタン。スキップ/再生終了で消える。
 - ランキング報酬：金額は `lib/economy.ts` の `WEEKLY_REWARD_BY_RANK=[250,200,150,100,50]`（配列長＝報酬対象人数。cronは`.limit(length)`で自動追従）（cron `weekly-payout` と `RankingClient` で共有）。確定は毎週日曜18:00 JST（`lib/week.ts` の `nextWeekBoundary`、API `/api/ranking` が `nextResetAt`/`rewards` を返す）。
 
