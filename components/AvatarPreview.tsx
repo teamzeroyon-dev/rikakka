@@ -55,7 +55,7 @@ function HairBack({ i, colors }: { i: number; colors: [string, string, string] }
 }
 
 function HairFront({ i, colors }: { i: number; colors: [string, string, string] }) {
-  const [main, shade, hi] = colors
+  const [main, , hi] = colors
   // Each fringe wraps the top of the face; the parting/shape is what changes.
   const fringes = [
     // 1 short round bowl
@@ -79,7 +79,6 @@ function HairFront({ i, colors }: { i: number; colors: [string, string, string] 
     <g>
       {fringes[i % fringes.length]}
       <path d="M74 52 Q100 44 126 52" fill="none" stroke={hi} strokeWidth={3} strokeLinecap="round" opacity={0.6} />
-      <path d="M60 84 Q100 74 140 84" fill="none" stroke={shade} strokeWidth={2} strokeLinecap="round" opacity={0.4} />
     </g>
   )
 }
