@@ -19,6 +19,7 @@
 - push認証: このPCの資格情報は GitHub `togarinozawa`。teamzeroyon-dev への write招待を承諾済み。
 - v0 も同じ main に PR で入れてくる → **push前に必ず `git fetch` して分岐確認**。衝突したら rebase して両者の変更を残す。
 - コミットメッセージ = 日本語UIだが英語で簡潔に。
+- **開発版（2026-10-15〜）**：作業は `dev` ブランチへ push → Vercel が Preview URL を自動発行（cron は本番のみで動く）。確認できたら `dev` を `main` にマージ＝本番反映。Preview の `DATABASE_URL` は本番と別の Neon ブランチを指す（Vercel の環境変数を Preview 用に別設定）。
 
 ## DB（本番で必須・未対応だと全ページ500）
 - `lib/db/index.ts` は `process.env.DATABASE_URL` のみ参照。任意で `PG_POOL_MAX` / `PG_POOL_IDLE_MS`（未設定ならpg既定）。
@@ -51,7 +52,19 @@
 
 ## 既知の落とし穴 / 教訓
 - **著作権**：ネットのGIF/画像を落として埋め込まない。自前 or 権利OKのみ（`RealWorldCard.image`）。
-- **ローカルDB検証**：pglite-socketは不安定。実Postgresが必要なら `embedded-postgres` を scratchpad に立てる（port 5433, db `rikakka`）。`.env.local` に `DATABASE_URL` + `PG_POOL_MAX=1`。
+- **ローカルDB検証**：pglite-socketは不安定。常設のローカルDBは `~/.local/share/rikakka-devdb/`（embedded-postgres、データは `data/` に永続、リポジトリ外）。起動：`node ~/.local/share/rikakka-devdb/start.mjs`（`.env.local` の `DATABASE_URL` を読み port 5433 で起動→DB作成→`setup-db.mjs` まで自動。Ctrl+Cで停止）。**DB未起動だとログインで「うまく はじめられなかったよ」が出る**。
+  - そこで pnpm を使うときは `onlyBuiltDependencies` に embedded-postgres を入れる（postinstall が走らないと `libpq.so.5` が見つからない）。
+- リポジトリの `node_modules` が中途半端だと `pg` が見つからない → `CI=true npx pnpm@10 install --frozen-lockfile`（TTYがないと purge 確認で止まる）。
 - **プレビュー枠**：セッション途中でレイアウトが0pxに潰れたりスクショが古い状態を写すことがある。DOM(`get_page_text`/JS)で確認する方が確実。コード・ビルドの問題ではない。
 - ドラッグの自動検証：`left_click_drag`は不安定。JSでpointer events(pointerdown→move→up、間にsleep)を投げ、`[data-drop]`の変化で判定するのが確実。
 - 改行コードは CRLF（`.gitignore`/autocrlf）。tscとbuildが通ればOK。
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
