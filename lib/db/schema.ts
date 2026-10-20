@@ -18,30 +18,23 @@ export const problemClears = pgTable('problem_clears', {
   userProblemUnique: unique().on(t.userId, t.problemId),
 }))
 
-export const avatarOwned = pgTable('avatar_owned', {
-  id: serial('id').primaryKey(),
-  userId: text('userId').notNull(),
-  partType: text('partType').notNull(),
-  variantId: text('variantId').notNull(),
-  purchasedAt: timestamp('purchasedAt', { withTimezone: true }).notNull().defaultNow(),
-}, (t) => ({
-  ownedUnique: unique().on(t.userId, t.partType, t.variantId),
-}))
-
-export const avatarEquipped = pgTable('avatar_equipped', {
+// Mascot: look comes from clears; this row stores what coins changed.
+export const mascot = pgTable('mascot', {
   userId: text('userId').primaryKey(),
-  hair: text('hair').notNull().default('hair-1'),
-  hairColor: text('hairColor').notNull().default('hairColor-1'),
-  faceShape: text('faceShape').notNull().default('faceShape-1'),
-  bodyType: text('bodyType').notNull().default('bodyType-1'),
-  eyes: text('eyes').notNull().default('eyes-1'),
-  eyebrows: text('eyebrows').notNull().default('eyebrows-1'),
-  eyelashes: text('eyelashes').notNull().default('eyelashes-1'),
-  nose: text('nose').notNull().default('nose-1'),
-  mouth: text('mouth').notNull().default('mouth-1'),
-  clothes: text('clothes').notNull().default('clothes-1'),
+  background: text('background').notNull().default('bg-sky'),
+  accessory: text('accessory').notNull().default('acc-none'),
+  love: integer('love').notNull().default(0),
   updatedAt: timestamp('updatedAt', { withTimezone: true }).notNull().defaultNow(),
 })
+
+export const mascotOwned = pgTable('mascot_owned', {
+  id: serial('id').primaryKey(),
+  userId: text('userId').notNull(),
+  itemId: text('itemId').notNull(),
+  purchasedAt: timestamp('purchasedAt', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => ({
+  mascotOwnedUnique: unique().on(t.userId, t.itemId),
+}))
 
 export const usageWeekly = pgTable('usage_weekly', {
   id: serial('id').primaryKey(),

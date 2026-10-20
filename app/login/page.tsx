@@ -20,8 +20,8 @@ export default function LoginPage() {
     startTransition(async () => {
       try {
         await createAccount(name, prefecture)
-        // First stop after signing up is the avatar picker; the map comes after.
-        router.push('/avatar?new=1')
+        // First stop after signing up is meeting the mascot; the map comes after.
+        router.push('/mascot?new=1')
         router.refresh()
       } catch {
         setError('うまく はじめられなかったよ。もう一度 ためしてね。')
@@ -37,7 +37,7 @@ export default function LoginPage() {
             
           </span>
           <h1 className="text-xl font-black text-[#3d3a38]">さわって わかる さんすう・りか</h1>
-          <p className="text-sm leading-6 text-[#8a8478]">なまえと とどうふけんを えらんだら、つぎは アバターだよ</p>
+          <p className="text-sm leading-6 text-[#8a8478]">なまえと とどうふけんを えらんだら、つぎは なかまに あえるよ</p>
         </div>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-4">

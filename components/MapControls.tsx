@@ -1,6 +1,9 @@
 'use client'
 import Link from 'next/link'
-import { Backpack, Compass, Home, Minus, Plus, Smile, Sparkles, Target, Trophy } from 'lucide-react'
+import { Backpack, Compass, Home, Minus, Plus, Sparkles, Target, Trophy } from 'lucide-react'
+import { MascotView } from '@/components/MascotView'
+import { computeMascotLook } from '@/lib/mascot'
+import { useSave } from '@/lib/progress'
 
 export function MapControls({
   points,
@@ -19,6 +22,8 @@ export function MapControls({
   regionPill: { name: string; cleared: number; total: number } | null
   diagnosisNear: string | null
 }) {
+  const { save } = useSave()
+  const look = computeMascotLook(save.cleared ?? {})
   return (
     <>
       <div className="pointer-events-none absolute inset-x-0 top-0 flex flex-wrap items-start justify-between gap-2 p-3 sm:p-4">
@@ -50,11 +55,11 @@ export function MapControls({
               <Target className="size-6" />
             </Link>
             <Link
-              href="/avatar"
-              aria-label="アバター"
-              className="flex size-12 items-center justify-center rounded-full border-2 border-[#0e4b69] bg-[#e07a9b] text-white shadow-[0_4px_0_#174d70]"
+              href="/mascot"
+              aria-label="なかま"
+              className="flex size-12 items-center justify-center overflow-hidden rounded-full border-2 border-[#0e4b69] bg-[#ffe3ec] shadow-[0_4px_0_#174d70]"
             >
-              <Smile className="size-6" />
+              <MascotView look={look} accessory={save.mascot?.accessory} size={46} />
             </Link>
             <Link
               href="/ranking"

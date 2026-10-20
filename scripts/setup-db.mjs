@@ -18,27 +18,19 @@ const statements = [
     "lastClearedAt" timestamptz NOT NULL DEFAULT now(),
     UNIQUE ("userId", "problemId")
   )`,
-  `CREATE TABLE IF NOT EXISTS avatar_owned (
+  `CREATE TABLE IF NOT EXISTS mascot (
+    "userId" text PRIMARY KEY,
+    background text NOT NULL DEFAULT 'bg-sky',
+    accessory text NOT NULL DEFAULT 'acc-none',
+    love integer NOT NULL DEFAULT 0,
+    "updatedAt" timestamptz NOT NULL DEFAULT now()
+  )`,
+  `CREATE TABLE IF NOT EXISTS mascot_owned (
     id serial PRIMARY KEY,
     "userId" text NOT NULL,
-    "partType" text NOT NULL,
-    "variantId" text NOT NULL,
+    "itemId" text NOT NULL,
     "purchasedAt" timestamptz NOT NULL DEFAULT now(),
-    UNIQUE ("userId", "partType", "variantId")
-  )`,
-  `CREATE TABLE IF NOT EXISTS avatar_equipped (
-    "userId" text PRIMARY KEY,
-    hair text NOT NULL DEFAULT 'hair-1',
-    "hairColor" text NOT NULL DEFAULT 'hairColor-1',
-    "faceShape" text NOT NULL DEFAULT 'faceShape-1',
-    "bodyType" text NOT NULL DEFAULT 'bodyType-1',
-    eyes text NOT NULL DEFAULT 'eyes-1',
-    eyebrows text NOT NULL DEFAULT 'eyebrows-1',
-    eyelashes text NOT NULL DEFAULT 'eyelashes-1',
-    nose text NOT NULL DEFAULT 'nose-1',
-    mouth text NOT NULL DEFAULT 'mouth-1',
-    clothes text NOT NULL DEFAULT 'clothes-1',
-    "updatedAt" timestamptz NOT NULL DEFAULT now()
+    UNIQUE ("userId", "itemId")
   )`,
   `CREATE TABLE IF NOT EXISTS usage_weekly (
     id serial PRIMARY KEY,
@@ -61,14 +53,8 @@ const statements = [
   // (and any created by the old CREATE above) into line.
   `ALTER TABLE problem_clears ADD COLUMN IF NOT EXISTS count integer NOT NULL DEFAULT 1`,
   `ALTER TABLE problem_clears ADD COLUMN IF NOT EXISTS "lastClearedAt" timestamptz NOT NULL DEFAULT now()`,
-  // Existing databases predate the hair parts, and shipped placeholder defaults
-  // for faceShape/bodyType that did not match any real variant id.
-  `ALTER TABLE avatar_equipped ADD COLUMN IF NOT EXISTS hair text NOT NULL DEFAULT 'hair-1'`,
-  `ALTER TABLE avatar_equipped ADD COLUMN IF NOT EXISTS "hairColor" text NOT NULL DEFAULT 'hairColor-1'`,
-  `ALTER TABLE avatar_equipped ALTER COLUMN "faceShape" SET DEFAULT 'faceShape-1'`,
-  `ALTER TABLE avatar_equipped ALTER COLUMN "bodyType" SET DEFAULT 'bodyType-1'`,
-  `UPDATE avatar_equipped SET "faceShape" = 'faceShape-1' WHERE "faceShape" = 'face-1'`,
-  `UPDATE avatar_equipped SET "bodyType" = 'bodyType-1' WHERE "bodyType" = 'body-1'`,
+  // The avatar_owned / avatar_equipped tables from the old avatar feature are
+  // left in place on existing databases (no longer read or written).
 ]
 
 for (const [i, sql] of statements.entries()) {

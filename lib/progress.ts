@@ -2,28 +2,16 @@
 import useSWR, { mutate as globalMutate } from 'swr'
 
 export type ClearRecord = { count: number; lastClearedAt: number }
-export type AvatarEquipped = {
-  hair: string
-  hairColor: string
-  faceShape: string
-  bodyType: string
-  eyes: string
-  eyebrows: string
-  eyelashes: string
-  nose: string
-  mouth: string
-  clothes: string
-}
+export type MascotSave = { background: string; accessory: string; love: number; owned: string[] }
 export type Save = {
   points: number
   name: string
   prefecture: string
   cleared: Record<string, ClearRecord>
-  avatarOwned: string[]
-  avatarEquipped: AvatarEquipped | null
+  mascot: MascotSave
 }
 
-export const defaultSave: Save = { points: 0, name: '', prefecture: '', cleared: {}, avatarOwned: [], avatarEquipped: null }
+export const defaultSave: Save = { points: 0, name: '', prefecture: '', cleared: {}, mascot: { background: 'bg-sky', accessory: 'acc-none', love: 0, owned: [] } }
 
 const SAVE_KEY = '/api/save'
 const fetcher = (url: string) => fetch(url).then((r) => r.json())

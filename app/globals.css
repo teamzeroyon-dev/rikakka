@@ -448,3 +448,14 @@
 .animate-bug-flutter {
   animation: bug-flutter 900ms ease-in-out infinite;
 }
+
+/* Mascot snack: drops into the mouth and shrinks away. */
+@keyframes mascot-snack {
+  0% { top: 4%; opacity: 0; transform: translateX(-50%) scale(1.2); }
+  15% { opacity: 1; }
+  70% { top: 58%; transform: translateX(-50%) scale(0.8); opacity: 1; }
+  100% { top: 62%; transform: translateX(-50%) scale(0.1); opacity: 0; }
+}
+.mascot-snack {
+  animation: mascot-snack 1.1s ease-in forwards;
+}
