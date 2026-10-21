@@ -21,6 +21,11 @@
 - コミットメッセージ = 日本語UIだが英語で簡潔に。
 - **開発版（2026-10-15〜）**：作業は `dev` ブランチへ push → Vercel が Preview URL を自動発行（cron は本番のみで動く）。確認できたら `dev` を `main` にマージ＝本番反映。Preview の `DATABASE_URL` は本番と別の Neon ブランチを指す（Vercel の環境変数を Preview 用に別設定）。
 
+## やりたいことの管理（GitHub Issues）
+- ユーザーのやりたいことは GitHub Issues で管理（2026-10-21〜）。`gh` CLI が `togarinozawa` でログイン済み（GitHub MCP は無い）。
+- テンプレート：`.github/ISSUE_TEMPLATE/animation.yml`（アニメ指示＝どこ／今／こうしたい＋絵）、`wish.yml`。ラベル：アニメーション／問題・ステージ／マスコット／せってい。
+- アニメ指示は「絵＋文章」で来る。Issue に貼られた画像は `gh` の認証で取得して見る。終わったら Issue を閉じる。
+
 ## DB（本番で必須・未対応だと全ページ500）
 - `lib/db/index.ts` は `process.env.DATABASE_URL` のみ参照。任意で `PG_POOL_MAX` / `PG_POOL_IDLE_MS`（未設定ならpg既定）。
 - **初回に一度**：`DATABASE_URL='...' node scripts/setup-db.mjs`（CREATE + 不足カラムのALTER。冪等）。
