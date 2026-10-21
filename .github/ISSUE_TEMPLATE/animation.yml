@@ -1,0 +1,23 @@
+name: アニメーションの指示
+description: 動きを「絵＋ひとこと」で指示する
+title: "[アニメ] "
+labels: ["アニメーション"]
+body:
+  - type: input
+    id: where
+    attributes:
+      label: どこの動き？
+      description: ステージ名や画面（例：地学「影を動かしてみよう」の時計の針）
+    validations:
+      required: true
+  - type: textarea
+    id: now
+    attributes:
+      label: 今の動き（気になるところ）
+  - type: textarea
+    id: want
+    attributes:
+      label: こうしたい（絵を貼る＋ひとこと）
+      description: 始まり・途中・終わりの3コマに矢印とひとことがあると確実。画像はドラッグ＆ドロップで貼れます。
+    validations:
+      required: true
