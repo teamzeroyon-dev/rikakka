@@ -1,0 +1,15 @@
+name: やりたいこと
+description: 新しい機能・ステージ・問題・見た目の変更など
+title: ""
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: やりたいこと
+      description: ざっくりでOK。絵や画面のスクショも貼れます。
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: なぜ・どんな体験にしたい？
