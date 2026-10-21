@@ -57,7 +57,7 @@ export function ScienceStageClient({ id }: { id: string }) {
         </div>
       )}
 
-      {phase === 'quiz' && <QuizFlow quiz={stage} onCleared={handleQuizCleared} />}
+      {phase === 'quiz' && <QuizFlow stageId={stage.id} quiz={stage} onCleared={handleQuizCleared} />}
 
       {phase === 'clear' && (
         <StageClearCelebration

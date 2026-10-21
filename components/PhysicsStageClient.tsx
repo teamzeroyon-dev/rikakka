@@ -90,7 +90,7 @@ export function PhysicsStageClient({ id }: { id: string }) {
         </div>
       )}
 
-      {phase === 'quiz' && quiz && <QuizFlow quiz={quiz} onCleared={finishStage} />}
+      {phase === 'quiz' && quiz && <QuizFlow stageId={problem.id} quiz={quiz} onCleared={finishStage} />}
 
       {phase === 'clear' && (
         <StageClearCelebration clearLine={problem.solved.discovery} next={next ? { href: `/q/${next.id}`, title: next.title } : null} onRetry={restart} />

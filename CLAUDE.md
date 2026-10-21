@@ -35,6 +35,8 @@
   - 地学/生物: `/s/[id]` → `ScienceStageClient` + `ScienceActivity`。データ `lib/scienceStages.ts`。
   - 物理: `/q/[id]` → `PhysicsStageClient`（Lever/LaunchCourse を手を動かす段に再利用）。データ `lib/problems.ts` + `lib/physicsQuiz.ts`。
 - クイズ `components/QuizFlow.tsx`：選択肢は毎回シャッフル（正解が先頭固定だったため）。バッジは表示位置でA/B/C。
+  - 問題プール `lib/quizPool/`（教科別 `physics/chem/chigaku/seibutsu.ts`、ステージidキー）。ステージ本体の normal+retry と pool.normal から2問（normal≠retry）、easy と pool.easy から1問を、QuizFlow を開くたびにランダムに選ぶ（`pickQuiz`）。追加は `q('問題', '正解', 'はずれ', 'はずれ')` を足すだけ。2026-10-21時点で全57ステージに ふつう+3・かんたん+2。
+  - chem-14 は食塩→ミョウバンに修正済み（食塩は温度でほぼ溶ける量が変わらない＝教科書と矛盾していた）。
 - 物体アイコン `components/ScienceIcons.tsx`：絵文字→手描きSVG（`ObjIcon`）。データは絵文字ラベルのまま、未描画は絵文字フォールバック。
 - ドラッグ系アクティビティは `useDragDrop`（ゴースト追従＋elementFromPointで`[data-drop]`判定）。
 - 社会とのつながり `lib/realWorld.ts` + `components/RealWorldCard.tsx`（学習フェーズに表示。`image`は`/public`に置いた自前画像用スロット）。

@@ -377,16 +377,16 @@ export const chemStages: ChemStage[] = [
     index: 14,
     title: '温度で変わる？',
       curriculum: { code: '理科 5年', unit: 'もののとけ方' },
-    learningLine: 'あたたかい水は、冷たい水よりも食塩をたくさんとかせるよ。温度で溶ける量が変わるんだ！',
+    learningLine: 'ミョウバンは、冷たい水よりもあたたかい水にたくさんとけるよ。温度で溶ける量が変わる物があるんだ！',
     experiment: {
       kind: 'dissolve',
       cups: [
-        { label: '冷たい水', items: [{ label: '食塩', behavior: 'dissolve', limit: 4 }] },
-        { label: 'あたたかい水', items: [{ label: '食塩', behavior: 'dissolve', limit: 8 }] },
+        { label: '冷たい水', items: [{ label: 'ミョウバン', behavior: 'dissolve', limit: 3 }] },
+        { label: 'あたたかい水', items: [{ label: 'ミョウバン', behavior: 'dissolve', limit: 8 }] },
       ],
     },
     normal: {
-      prompt: '同じ量の水に食塩を溶かしました。温度によって溶ける量に違いがありました。このことから何が分かる？',
+      prompt: '同じ量の水にミョウバンを溶かしました。あたたかい水の方がたくさん溶けました。このことから何が分かる？',
       choices: [{ id: 'A', text: '温度によって溶ける量が変化することがある' }, { id: 'B', text: '温度は関係ない' }, { id: 'C', text: '食塩は水に溶けない' }],
       correctId: 'A',
     },

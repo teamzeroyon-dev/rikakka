@@ -2,6 +2,7 @@
 import { useMemo, useState } from 'react'
 import { Sparkles, Lightbulb, PartyPopper } from 'lucide-react'
 import type { QuizChoiceId, QuizQuestion, QuizSet } from '@/lib/quizProblems'
+import { pickQuiz } from '@/lib/quizPool'
 
 // The source data almost always lists the correct choice first, so display order
 // is shuffled per question — the correct answer lands in a random slot and the
@@ -39,7 +40,9 @@ function questionFor(quiz: QuizSet, tier: Tier): QuizQuestion {
   return quiz.retry
 }
 
-export function QuizFlow({ quiz, onCleared }: { quiz: QuizSet; onCleared: () => void }) {
+export function QuizFlow({ stageId, quiz: baseQuiz, onCleared }: { stageId: string; quiz: QuizSet; onCleared: () => void }) {
+  // A fresh pick from the stage's question pool each time the quiz opens.
+  const [quiz] = useState(() => pickQuiz(stageId, baseQuiz))
   const [tier, setTier] = useState<Tier>('normal')
   const [normalWrongCount, setNormalWrongCount] = useState(0)
   const [selected, setSelected] = useState<QuizChoiceId | null>(null)
